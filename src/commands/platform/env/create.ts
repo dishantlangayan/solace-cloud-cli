@@ -1,0 +1,71 @@
+import {Command, Flags} from '@oclif/core'
+import {table} from 'table'
+
+import {Environment, EnvironmentDetail} from '../../../types/environment.js'
+import {camelCaseToTitleCase} from '../../../util/internal.js'
+import {ScConnection} from '../../../util/sc-connection.js'
+
+export default class PlatformEnvCreate extends Command {
+  static override args = {}
+  static override description = `Create a new environment.
+
+  Token Permissions: [ environments:edit ]`
+  static override examples = ['<%= config.bin %> <%= command.id %>']
+  static override flags = {
+    desc: Flags.string({char: 'd', description: 'Description of the environment to create.'}),
+    // flag with no value (--isDefault)
+    isDefault: Flags.boolean({description: 'Indicates this is the organization’s default environment.'}),
+    isProduction: Flags.boolean({
+      description: `Indicates this is an organization’s production environment. 
+      This is an immutable field. If an environment needs to be migrated, 
+      architecture can be migrated to a new environment with the desired 
+      environment type instead.`,
+    }),
+    // flag with a value (-n, --name=VALUE)
+    name: Flags.string({char: 'n', description: 'Name of the environment to create.', required: true}),
+  }
+
+  public async run(): Promise<void> {
+    const {flags} = await this.parse(PlatformEnvCreate)
+
+    const name = flags.name ?? ''
+    const desc = flags.desc ?? ''
+    const isDefault = flags.isDefault ?? false
+    const isProduction = flags.isProduction ?? false
+
+    const conn = new ScConnection()
+    // API url
+    const apiUrl: string = `/platform/environments`
+    // API body
+    const body = {
+      description: desc,
+      isDefault,
+      isProduction,
+      name,
+    }
+    // API call
+    const resp = await conn.post<EnvironmentDetail>(apiUrl, body)
+    // Display results
+    this.log('Environment created successfully.')
+    this.print(resp.data)
+  }
+
+  private print(environment: Environment): void {
+    this.log()
+    const tableRows = [
+      ['Key', 'Value'],
+      ...Object.entries(environment).map(([key, value]) => [camelCaseToTitleCase(key), value]),
+    ]
+
+    // Table config
+    const config = {
+      columns: {
+        1: {width: 50, wrapWord: true},
+      },
+      drawHorizontalLine(lineIndex: number, rowCount: number) {
+        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
+      },
+    }
+    this.log(table(tableRows, config))
+  }
+}
