@@ -30,8 +30,10 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`sc hello PERSON`](#sc-hello-person)
-* [`sc hello world`](#sc-hello-world)
+* [`sc platform env create`](#sc-platform-env-create)
+* [`sc platform env delete`](#sc-platform-env-delete)
+* [`sc platform env display`](#sc-platform-env-display)
+* [`sc platform env list`](#sc-platform-env-list)
 * [`sc help [COMMAND]`](#sc-help-command)
 * [`sc plugins`](#sc-plugins)
 * [`sc plugins add PLUGIN`](#sc-plugins-add-plugin)
@@ -72,7 +74,7 @@ EXAMPLES
 
 _See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/create.ts)_
 
-## `platform env delete`
+## `sc platform env delete`
 
 Delete an environment using either its name or unique identifier. The default environment cannot be deleted.
 
@@ -97,7 +99,7 @@ EXAMPLES
 
 _See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/delete.ts)_
 
-## `platform env display`
+## `sc platform env display`
 
 Display information about an Environment.
 
@@ -125,7 +127,7 @@ EXAMPLES
 
 _See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/display.ts)_
 
-## `platform env list`
+## `sc platform env list`
 
 Get a list of all Environments.
 
