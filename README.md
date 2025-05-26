@@ -30,6 +30,10 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`sc missionctrl broker create`](#sc-missionctrl-broker-create)
+* [`sc missionctrl broker delete`](#sc-missionctrl-broker-delete)
+* [`sc missionctrl broker display`](#sc-missionctrl-broker-display)
+* [`sc missionctrl broker list`](#sc-missionctrl-broker-list)
 * [`sc platform env create`](#sc-platform-env-create)
 * [`sc platform env delete`](#sc-platform-env-delete)
 * [`sc platform env display`](#sc-platform-env-display)
@@ -45,6 +49,128 @@ USAGE
 * [`sc plugins uninstall [PLUGIN]`](#sc-plugins-uninstall-plugin)
 * [`sc plugins unlink [PLUGIN]`](#sc-plugins-unlink-plugin)
 * [`sc plugins update`](#sc-plugins-update)
+
+## `sc missionctrl broker create`
+
+Create an event broker service. You must provide a unique name and select a service class and datacenter. You can optionally define other properties for the event broker service.
+
+```
+USAGE
+  $ sc missionctrl broker create -d <value> -n <value> -c <value> [-e <value>] [-l] [-s <value>] [-m <value>] [-v <value>]
+
+FLAGS
+  -c, --service-class-id=<value>  (required) Supported service classes.
+  -d, --datacenter-id=<value>     (required) The identifier of the datacenter.
+  -e, --env-name=<value>          The name of the environment environment where you want to create the service. If no name is provided, the service will be
+                                  created in the default environment.
+  -l, --locked                    Indicates if you can delete the event broker service after creating it. The default value is false.
+  -m, --msg-vpn-name=<value>      The message VPN name. A default message VPN name is provided when this is not specified.
+  -n, --name=<value>              (required) Name of the event broker service to create.
+  -s, --max-spool-usage=<value>   The message spool size, in gigabytes (GB). A default message spool size is provided if this is not specified.
+  -v, --version=<value>           The event broker version. A default version is provided when this is not specified.
+
+DESCRIPTION
+  Create an event broker service. You must provide a unique name and select a service class and datacenter. You can optionally define other properties for the
+  event broker service.
+
+  Your token must have one of the permissions listed in the Token Permissions.
+
+  Token Permissions: [ `services:post` ]
+
+EXAMPLES
+  $ sc missionctrl broker create --datacenter-id=MyDatacenterId --name=MyBrokerName --service-class-id=DEVELOPER
+```
+
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/create.ts)_
+
+## `sc missionctrl broker delete`
+
+Delete a service using its unique identifier.
+
+```
+USAGE
+  $ sc missionctrl broker delete [-e <value>] [-n <value>]
+
+FLAGS
+  -e, --broker-id=<value>  Id of the event broker service.
+  -n, --name=<value>       Name of the event broker service.
+
+DESCRIPTION
+  Delete a service using its unique identifier.
+
+  Your token must have one of the permissions listed in the Token Permissions.
+
+  Token Permissions: [ `services:delete` **or** `services:delete:self` **or** `mission_control:access` ]
+
+EXAMPLES
+  $ sc missionctrl broker delete --broker-id=MyBrokerId
+
+  $ sc missionctrl broker delete --name=MyBrokerName
+```
+
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/delete.ts)_
+
+## `sc missionctrl broker display`
+
+```
+USAGE
+  $ sc missionctrl broker display [-b <value>] [-n <value>]
+
+FLAGS
+  -b, --broker-id=<value>  Id of the event broker service.
+  -n, --name=<value>       Name of the event broker service.
+
+DESCRIPTION
+  Get the details of an event broker service using its identifier or name.
+
+  Use either the Event Broker's ID (--broker-id) or name of the Event Broker (--name).
+
+  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view` **or** `services:view:self` ]
+
+EXAMPLES
+  $ sc missionctrl broker display
+```
+
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/display.ts)_
+
+## `sc missionctrl broker list`
+
+Get a listing of event broker services.
+
+```
+USAGE
+  $ sc missionctrl broker list [-n <value>] [--pageNumber <value>] [--pageSize <value>] [--sort <value>]
+
+FLAGS
+  -n, --name=<value>
+      Name of the event broker service to match on.
+
+  --pageNumber=<value>
+      The page number to get. Defaults to 1
+
+  --pageSize=<value>
+      The number of event broker services to return per page. Defaults to 100
+
+  --sort=<value>
+      Sort the returned event broker services by attribute.
+
+      You can use the following value formats for the sort order:
+
+      * attributes-names
+      * attributes-names:sort-order
+
+DESCRIPTION
+  Get a listing of event broker services.
+
+  Your token must have one of the permissions listed in the Token Permissions.
+
+  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view` **or** `services:view:self` ]
+
+EXAMPLES
+  $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
+```
+
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc platform env create`
 
