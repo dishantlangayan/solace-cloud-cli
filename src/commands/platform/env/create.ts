@@ -10,7 +10,7 @@ export default class PlatformEnvCreate extends Command {
   static override description = `Create a new environment.
 
   Token Permissions: [ environments:edit ]`
-  static override examples = ['<%= config.bin %> <%= command.id %>']
+  static override examples = ['<%= config.bin %> <%= command.id %> --name=MyEnvironment --desc="My environment description" --isDefault --isProduction']
   static override flags = {
     desc: Flags.string({char: 'd', description: 'Description of the environment to create.'}),
     // flag with no value (--isDefault)
