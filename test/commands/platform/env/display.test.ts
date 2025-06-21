@@ -1,14 +1,78 @@
-import {runCommand} from '@oclif/test'
-import {expect} from 'chai'
+import { runCommand } from '@oclif/test'
+import { expect } from 'chai'
+import * as sinon from 'sinon'
+import { table } from 'table'
+
+import { camelCaseToTitleCase } from '../../../../src/util/internal.js'
+import { ScConnection } from '../../../../src/util/sc-connection.js'
+
+function anEnv(name: string, isDefault: boolean, isProd: boolean) {
+  return {
+    bgColor: '#DA162D',
+    createdBy: 'someuser',
+    createdTime: '2024-09-05T19:54:42.766',
+    description: `This is a description for the the environment ${name}`,
+    fgColor: '#FFFFFF',
+    icon: 'ROCKET_LAUNCH',
+    id: `id${name}`,
+    isDefault,
+    isProduction: isProd,
+    name,
+    updatedBy: 'someuser',
+    updatedTime: '2024-09-05T19:54:42.766',
+  }
+}
 
 describe('platform:env:display', () => {
-  it('runs platform:env:display cmd', async () => {
-    const {stdout} = await runCommand('platform:env:display')
-    expect(stdout).to.contain('hello world')
+  let scConnStub: any
+
+  beforeEach(() => {
+    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
+  });
+
+  afterEach(() => {
+    scConnStub.restore();
   })
 
-  it('runs platform:env:display --name oclif', async () => {
-    const {stdout} = await runCommand('platform:env:display --name oclif')
-    expect(stdout).to.contain('hello oclif')
+  it('runs platform:env:display', async () => {
+    const { stdout } = await runCommand('platform:env:display')
+    expect(stdout).to.contain('')
+  })
+
+  it('runs platform:env:display --name=Default', async () => {
+    // Arrange
+    const envName = 'Default'
+    const envs = {
+      data: [anEnv(envName, true, false)],
+      meta: {
+        pagination: {
+          count: 1,
+          nextPage: null,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1
+        }
+      }
+    }
+    scConnStub.returns(Promise.resolve(envs))
+
+    let tableRows: any[] = [['Key', 'Value']]
+    tableRows = tableRows.concat(Object.entries(envs.data[0])
+      .map(([key, value]) => ([
+        camelCaseToTitleCase(key),
+        value
+      ])))
+
+    const config = {
+      columns: {
+        1: { width: 50, wrapWord: true }
+      },
+      drawHorizontalLine(lineIndex: number, rowCount: number) {
+        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount;
+      }
+    }
+
+    const { stdout } = await runCommand(`platform:env:display --name=${envName}`)
+    expect(stdout).to.contain(table(tableRows, config))
   })
 })

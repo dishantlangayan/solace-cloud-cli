@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core'
-import {table} from 'table'
+import { Command, Flags } from '@oclif/core'
+import { table } from 'table'
 
-import {Environment, EnvironmentApiResponse, EnvironmentDetail} from '../../../types/environment.js'
-import {camelCaseToTitleCase} from '../../../util/internal.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { Environment, EnvironmentApiResponse, EnvironmentDetail } from '../../../types/environment.js'
+import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class PlatformEnvDisplay extends Command {
   static override args = {}
@@ -16,13 +16,13 @@ export default class PlatformEnvDisplay extends Command {
   static override examples = ['<%= config.bin %> <%= command.id %> --name=MyEnvName', '<%= config.bin %> <%= command.id %> --env-id=MyEnvId']
   static override flags = {
     // flag for getting environment by id (-e, --env-id)
-    'env-id': Flags.string({char: 'e', description: 'Id of the environment.', exactlyOne: ['env-id', 'name']}),
+    'env-id': Flags.string({ char: 'e', description: 'Id of the environment.', exactlyOne: ['env-id', 'name'] }),
     // flag for getting environment by name (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'Name of the environment.', exactlyOne: ['env-id', 'name']}),
+    name: Flags.string({ char: 'n', description: 'Name of the environment.', exactlyOne: ['env-id', 'name'] }),
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(PlatformEnvDisplay)
+    const { flags } = await this.parse(PlatformEnvDisplay)
 
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
@@ -60,7 +60,7 @@ export default class PlatformEnvDisplay extends Command {
     // Table config
     const config = {
       columns: {
-        1: {width: 50, wrapWord: true},
+        1: { width: 50, wrapWord: true },
       },
       drawHorizontalLine(lineIndex: number, rowCount: number) {
         return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
