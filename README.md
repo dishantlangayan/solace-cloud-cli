@@ -17,11 +17,11 @@ The Solace Cloud CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g @solacecloud/cli
+$ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@solacecloud/cli/0.0.0 darwin-arm64 node-v23.7.0
+@dishantlangayan/solace-cloud-cli/0.0.0 darwin-arm64 node-v23.7.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
