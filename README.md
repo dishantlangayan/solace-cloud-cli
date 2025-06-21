@@ -30,6 +30,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`sc help [COMMAND]`](#sc-help-command)
 * [`sc missionctrl broker create`](#sc-missionctrl-broker-create)
 * [`sc missionctrl broker delete`](#sc-missionctrl-broker-delete)
 * [`sc missionctrl broker display`](#sc-missionctrl-broker-display)
@@ -51,28 +52,52 @@ USAGE
 * [`sc plugins unlink [PLUGIN]`](#sc-plugins-unlink-plugin)
 * [`sc plugins update`](#sc-plugins-update)
 
+## `sc help [COMMAND]`
+
+Display help for sc.
+
+```
+USAGE
+  $ sc help [COMMAND...] [-n]
+
+ARGUMENTS
+  COMMAND...  Command to show help for.
+
+FLAGS
+  -n, --nested-commands  Include all nested commands in the output.
+
+DESCRIPTION
+  Display help for sc.
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.28/src/commands/help.ts)_
+
 ## `sc missionctrl broker create`
 
 Create an event broker service. You must provide a unique name and select a service class and datacenter. You can optionally define other properties for the event broker service.
 
 ```
 USAGE
-  $ sc missionctrl broker create -d <value> -n <value> -c <value> [-e <value>] [-l] [-s <value>] [-m <value>] [-v <value>]
+  $ sc missionctrl broker create -d <value> -n <value> -c <value> [-e <value>] [-l] [-s <value>] [-m <value>] [-v
+  <value>]
 
 FLAGS
   -c, --service-class-id=<value>  (required) Supported service classes.
   -d, --datacenter-id=<value>     (required) The identifier of the datacenter.
-  -e, --env-name=<value>          The name of the environment environment where you want to create the service. If no name is provided, the service will be
-                                  created in the default environment.
-  -l, --locked                    Indicates if you can delete the event broker service after creating it. The default value is false.
-  -m, --msg-vpn-name=<value>      The message VPN name. A default message VPN name is provided when this is not specified.
+  -e, --env-name=<value>          The name of the environment environment where you want to create the service. If no
+                                  name is provided, the service will be created in the default environment.
+  -l, --locked                    Indicates if you can delete the event broker service after creating it. The default
+                                  value is false.
+  -m, --msg-vpn-name=<value>      The message VPN name. A default message VPN name is provided when this is not
+                                  specified.
   -n, --name=<value>              (required) Name of the event broker service to create.
-  -s, --max-spool-usage=<value>   The message spool size, in gigabytes (GB). A default message spool size is provided if this is not specified.
+  -s, --max-spool-usage=<value>   The message spool size, in gigabytes (GB). A default message spool size is provided if
+                                  this is not specified.
   -v, --version=<value>           The event broker version. A default version is provided when this is not specified.
 
 DESCRIPTION
-  Create an event broker service. You must provide a unique name and select a service class and datacenter. You can optionally define other properties for the
-  event broker service.
+  Create an event broker service. You must provide a unique name and select a service class and datacenter. You can
+  optionally define other properties for the event broker service.
 
   Your token must have one of the permissions listed in the Token Permissions.
 
@@ -113,6 +138,8 @@ _See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishan
 
 ## `sc missionctrl broker display`
 
+Get the details of an event broker service using its identifier or name.
+
 ```
 USAGE
   $ sc missionctrl broker display [-b <value>] [-n <value>]
@@ -126,7 +153,8 @@ DESCRIPTION
 
   Use either the Event Broker's ID (--broker-id) or name of the Event Broker (--name).
 
-  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view` **or** `services:view:self` ]
+  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view`
+  **or** `services:view:self` ]
 
 EXAMPLES
   $ sc missionctrl broker display
@@ -165,7 +193,8 @@ DESCRIPTION
 
   Your token must have one of the permissions listed in the Token Permissions.
 
-  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view` **or** `services:view:self` ]
+  Token Permissions: [ `mission_control:access` **or** `services:get` **or** `services:get:self` **or** `services:view`
+  **or** `services:view:self` ]
 
 EXAMPLES
   $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
@@ -196,7 +225,7 @@ DESCRIPTION
   Token Permissions: [ environments:edit ]
 
 EXAMPLES
-  $ sc platform env create
+  $ sc platform env create --name=MyEnvironment --desc="My environment description" --isDefault --isProduction
 ```
 
 _See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/create.ts)_
@@ -256,11 +285,12 @@ _See code: [src/commands/platform/env/display.ts](https://github.com/dishantlang
 
 ## `sc platform env list`
 
-Get a list of all Environments.
+Get a list of all Environments. 
 
 ```
 USAGE
-  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [--pageNumber <value>] [--pageSize <value>] [--sort <value>]
+  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [--pageNumber <value>]
+    [--pageSize <value>] [--sort <value>]
 
 FLAGS
   -n, --name=<value>        Name of the environment to match on.
@@ -323,19 +353,24 @@ Display help for sc.
 
 ```
 USAGE
-  $ sc help [COMMAND...] [-n]
+  $ sc platform env update [FILE] [-f] [-n <value>]
 
 ARGUMENTS
-  COMMAND...  Command to show help for.
+  FILE  file to read
 
 FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
+  -f, --force
+  -n, --name=<value>  name to print
 
 DESCRIPTION
-  Display help for sc.
+  This command has not been implemented yet. It is a placeholder for future functionality related to updating platform
+  environments.
+
+EXAMPLES
+  $ sc platform env update
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.28/src/commands/help.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
