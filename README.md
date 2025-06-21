@@ -1,12 +1,12 @@
-@solacecloud/cli
+@dishantlangayan/solace-cloud-cli
 =================
 
 The Solace Cloud CLI
 
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/@solacecloud/cli.svg)](https://npmjs.org/package/@solacecloud/cli)
-[![Downloads/week](https://img.shields.io/npm/dw/@solacecloud/cli.svg)](https://npmjs.org/package/@solacecloud/cli)
+[![Version](https://img.shields.io/npm/v/@dishantlangayan/solace-cloud-cli.svg)](https://npmjs.org/package/@dishantlangayan/solace-cloud-cli)
+[![Downloads/week](https://img.shields.io/npm/dw/@dishantlangayan/solace-cloud-cli.svg)](https://npmjs.org/package/@dishantlangayan/solace-cloud-cli)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
 
@@ -38,6 +38,7 @@ USAGE
 * [`sc platform env delete`](#sc-platform-env-delete)
 * [`sc platform env display`](#sc-platform-env-display)
 * [`sc platform env list`](#sc-platform-env-list)
+* [`sc platform env update`](#sc-platform-env-update)
 * [`sc help [COMMAND]`](#sc-help-command)
 * [`sc plugins`](#sc-plugins)
 * [`sc plugins add PLUGIN`](#sc-plugins-add-plugin)
@@ -284,6 +285,37 @@ EXAMPLES
 ```
 
 _See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/list.ts)_
+
+## `sc platform env update`
+
+Modify an environment's attributes
+
+```
+USAGE
+  $ sc platform env update [-d <value>] [-e <value>] [--isDefault] [-n <value>] [--new-name <value>]
+
+FLAGS
+  -d, --desc=<value>      Description of the environment to update.
+  -e, --env-id=<value>    Id of the environment.
+  -n, --name=<value>      Current name of the environment.
+      --isDefault         Indicates this is the organization’s default environment. The default value is false.
+      --new-name=<value>  New name of the environment.
+
+DESCRIPTION
+  Modify an environment's attributes
+
+  Use either the Environment's ID (--env-id) or name of the Environment (--name).
+
+  Token Permissions: [ environments:edit ]
+
+
+EXAMPLES
+  $ sc platform env update --name=MyEnvName --new-name=MyNewEnvName --desc="My description to update" --isDefault
+
+  $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault
+```
+
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/update.ts)_
 
 ## `sc help [COMMAND]`
 

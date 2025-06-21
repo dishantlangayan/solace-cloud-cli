@@ -1,5 +1,5 @@
 {
-  "name": "@solacecloud/cli",
+  "name": "@dishantlangayan/solace-cloud-cli",
   "description": "The Solace Cloud CLI",
   "version": "0.0.0",
   "author": "Dishant Langayan",
@@ -21,6 +21,7 @@
     "@types/chai": "^4",
     "@types/mocha": "^10",
     "@types/node": "^18",
+    "@types/sinon": "^17.0.4",
     "chai": "^4",
     "eslint": "^9",
     "eslint-config-oclif": "^6",
@@ -28,6 +29,7 @@
     "mocha": "^10",
     "oclif": "^4",
     "shx": "^0.3.3",
+    "sinon": "^21.0.0",
     "ts-node": "^10",
     "typescript": "^5"
   },
