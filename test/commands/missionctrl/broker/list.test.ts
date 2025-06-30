@@ -1,14 +1,67 @@
-import {runCommand} from '@oclif/test'
-import {expect} from 'chai'
+import { runCommand } from '@oclif/test'
+import { expect } from 'chai'
+import * as sinon from 'sinon'
+import { table } from 'table'
+
+import { ScConnection } from '../../../../src/util/sc-connection.js'
+
+function anBroker(brokerName: string, brokerId: string) {
+  return {
+    completedTime: '',
+    createdBy: 'test',
+    createdTime: '2024-09-05T19:54:42.766',
+    id: brokerId,
+    operationType: '',
+    resourceId: '',
+    resourceType: '',
+    status: '',
+    type: '',
+  }
+}
 
 describe('missionctrl:broker:list', () => {
-  it('runs missionctrl:broker:list cmd', async () => {
-    const {stdout} = await runCommand('missionctrl:broker:list')
-    expect(stdout).to.contain('hello world')
+  let scConnStub: any
+
+  beforeEach(() => {
+    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
+  });
+
+  afterEach(() => {
+    scConnStub.restore();
   })
 
-  it('runs missionctrl:broker:list --name oclif', async () => {
-    const {stdout} = await runCommand('missionctrl:broker:list --name oclif')
-    expect(stdout).to.contain('hello oclif')
+  it('runs missionctrl:broker:list cmd', async () => {
+    // Arrange
+    const envs = {
+      data: [anBroker('Broker1', 'BrokerId1'), anBroker('Broker1', 'BrokerId1'),
+      anBroker('Broker3', 'BrokerId3')],
+      meta: {
+        pagination: {
+          count: 3,
+          nextPage: null,
+          pageNumber: 1,
+          pageSize: 5,
+          totalPages: 1
+        }
+      }
+    }
+    scConnStub.returns(Promise.resolve(envs))
+
+    // Expected
+    const brokerArray = [
+      ['Name', 'Id', 'Type', 'Version', 'Owned By', 'Datacenter Id', 'Service Class Id'],
+      ...envs.data.map((item: any) => [
+        item.name,
+        item.id,
+        item.type,
+        item.eventBrokerServiceVersion,
+        item.ownedBy,
+        item.datacenterId,
+        item.serviceClassId,
+      ]),
+    ]
+
+    const { stdout } = await runCommand('missionctrl:broker:list')
+    expect(stdout).to.contain(table(brokerArray))
   })
 })

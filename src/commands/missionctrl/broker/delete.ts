@@ -17,7 +17,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
   static override flags = {
     // flag for getting environment by id (-e, --env-id)
     'broker-id': Flags.string({
-      char: 'e',
+      char: 'b',
       description: 'Id of the event broker service.',
       exactlyOne: ['broker-id', 'name'],
     }),

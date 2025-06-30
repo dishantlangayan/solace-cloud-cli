@@ -1,9 +1,8 @@
-import { captureOutput } from '@oclif/test'
+import { runCommand } from '@oclif/test'
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import { table } from 'table'
 
-import PlatformEnvList from '../../../../src/commands/platform/env/list'
 import { ScConnection } from '../../../../src/util/sc-connection'
 
 function anEnv(name: string, isDefault: boolean, isProd: boolean) {
@@ -46,15 +45,17 @@ describe('platform:env:list', () => {
       }
     }
     scConnStub.returns(Promise.resolve(envs))
+
     // Expected
-    let envArray: any[] = [['Name', 'Id', 'Is Default', 'Is Production', 'Description']]
-    const jsonArray = envs.data.map((item: any) => [
-      item.name,
-      item.id,
-      item.isDefault,
-      item.isProduction,
-      item.description])
-    envArray = envArray.concat(jsonArray)
+    const envArray = [
+      ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
+      ...envs.data.map((item: any) => [
+        item.name,
+        item.id,
+        item.isDefault,
+        item.isProduction,
+        item.description]),
+    ]
 
     const config = {
       columns: {
@@ -62,8 +63,8 @@ describe('platform:env:list', () => {
       }
     }
     // Run command
-    const { stdout } = await captureOutput(async () => PlatformEnvList.run([]))
-    expect(stdout).to.contain(`\n${table(envArray, config)}`)
+    const { stdout } = await runCommand('platform:env:list')
+    expect(stdout).to.contain(table(envArray, config))
   })
 
   it('runs platform:env:list --pageSize=5 --pageNumber=1', async () => {
@@ -83,21 +84,24 @@ describe('platform:env:list', () => {
     scConnStub.returns(Promise.resolve(envs))
 
     // Expected
-    let envArray: any[] = [['Name', 'Id', 'Is Default', 'Is Production', 'Description']]
-    const jsonArray = envs.data.map((item: any) => [
-      item.name,
-      item.id,
-      item.isDefault,
-      item.isProduction,
-      item.description])
-    envArray = envArray.concat(jsonArray)
+    const envArray = [
+      ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
+      ...envs.data.map((item: any) => [
+        item.name,
+        item.id,
+        item.isDefault,
+        item.isProduction,
+        item.description]),
+    ]
 
     const config = {
       columns: {
         4: { width: 50, wrapWord: true }
       }
     }
-    const { stdout } = await captureOutput(async () => PlatformEnvList.run(['--pageSize=5', '--pageNumber=1']))
-    expect(stdout).to.contain(`\n${table(envArray, config)}`)
+
+    // Run command
+    const { stdout } = await runCommand('platform:env:list --pageSize=5', '--pageNumber=1')
+    expect(stdout).to.contain(table(envArray, config))
   })
 })
