@@ -40,7 +40,6 @@ USAGE
 * [`sc platform env display`](#sc-platform-env-display)
 * [`sc platform env list`](#sc-platform-env-list)
 * [`sc platform env update`](#sc-platform-env-update)
-* [`sc help [COMMAND]`](#sc-help-command)
 * [`sc plugins`](#sc-plugins)
 * [`sc plugins add PLUGIN`](#sc-plugins-add-plugin)
 * [`sc plugins:inspect PLUGIN...`](#sc-pluginsinspect-plugin)
