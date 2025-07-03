@@ -1,22 +1,22 @@
 export interface EventBrokerCreateDetail {
-  completedTime: string
-  createdBy: string
-  createdTime: string
+  completedTime?: string
+  createdBy?: string
+  createdTime?: string
   error?: {
     errorId: string
     message: string
   }
   id: string
-  operationType: string
-  progressLogs: {
+  operationType?: string
+  progressLogs?: {
     message: string
     step: string
     timestamp: string
   }[]
-  resourceId: string
-  resourceType: string
-  status: string
-  type: string
+  resourceId?: string
+  resourceType?: string
+  status?: string
+  type?: string
 }
 
 export interface EventBrokerCreateApiResponse {
@@ -47,18 +47,18 @@ export interface EventBrokerListApiResponse {
 }
 
 export interface EventBrokerServiceDetail {
-  adminState: string
-  createdTime: string
-  creationState: string
-  datacenterId: string
-  environmentId: string
-  eventBrokerServiceVersion: string
+  adminState?: string
+  createdTime?: string
+  creationState?: string
+  datacenterId?: string
+  environmentId?: string
+  eventBrokerServiceVersion?: string
   id: string
-  infrastructureId: string
-  locked: boolean
-  msgVpnName: string
+  infrastructureId?: string
+  locked?: boolean
+  msgVpnName?: string
   name: string
-  ownedBy: string
-  serviceClassId: string
-  type: string
+  ownedBy?: string
+  serviceClassId?: string
+  type?: string
 }

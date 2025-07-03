@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import * as sinon from 'sinon'
 import { table } from 'table'
 
+import { Environment } from '../../../../src/types/environment'
 import { ScConnection } from '../../../../src/util/sc-connection'
 
 function anEnv(name: string, isDefault: boolean, isProd: boolean) {
@@ -49,7 +50,7 @@ describe('platform:env:list', () => {
     // Expected
     const envArray = [
       ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
-      ...envs.data.map((item: any) => [
+      ...envs.data.map((item: Environment) => [
         item.name,
         item.id,
         item.isDefault,
@@ -86,7 +87,7 @@ describe('platform:env:list', () => {
     // Expected
     const envArray = [
       ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
-      ...envs.data.map((item: any) => [
+      ...envs.data.map((item: Environment) => [
         item.name,
         item.id,
         item.isDefault,

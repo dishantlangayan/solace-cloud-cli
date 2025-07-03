@@ -2,25 +2,25 @@
 // It is used to define the structure of the environment data returned by the API.
 // The interfaces are used to ensure that the data returned by the API matches the expected structure.
 export interface Environment {
-  bgColor: string
-  createdBy: string
-  createdTime: string
-  description: string
-  fgColor: string
-  icon: string
-  id: string
-  isDefault: boolean
-  isProduction: boolean
+  bgColor?: string
+  createdBy?: string
+  createdTime?: string
+  description?: string
+  fgColor?: string
+  icon?: string
+  id?: string
+  isDefault?: boolean
+  isProduction?: boolean
   name: string
-  organization: {
+  organization?: {
     id: string
     internal: boolean
     name: string
     organizationType: string
   }
-  type: string
-  updatedBy: string
-  updatedTime: string
+  type?: string
+  updatedBy?: string
+  updatedTime?: string
 }
 // Example of an Environment object
 // {

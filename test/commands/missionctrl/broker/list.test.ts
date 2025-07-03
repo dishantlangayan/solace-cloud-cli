@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import * as sinon from 'sinon'
 import { table } from 'table'
 
+import { EventBrokerServiceDetail } from '../../../../src/types/broker.js'
 import { ScConnection } from '../../../../src/util/sc-connection.js'
 
 function anBroker(brokerName: string, brokerId: string) {
@@ -11,6 +12,7 @@ function anBroker(brokerName: string, brokerId: string) {
     createdBy: 'test',
     createdTime: '2024-09-05T19:54:42.766',
     id: brokerId,
+    name: brokerName,
     operationType: '',
     resourceId: '',
     resourceType: '',
@@ -32,7 +34,7 @@ describe('missionctrl:broker:list', () => {
 
   it('runs missionctrl:broker:list cmd', async () => {
     // Arrange
-    const envs = {
+    const brokers = {
       data: [anBroker('Broker1', 'BrokerId1'), anBroker('Broker1', 'BrokerId1'),
       anBroker('Broker3', 'BrokerId3')],
       meta: {
@@ -45,12 +47,12 @@ describe('missionctrl:broker:list', () => {
         }
       }
     }
-    scConnStub.returns(Promise.resolve(envs))
+    scConnStub.returns(Promise.resolve(brokers))
 
     // Expected
     const brokerArray = [
       ['Name', 'Id', 'Type', 'Version', 'Owned By', 'Datacenter Id', 'Service Class Id'],
-      ...envs.data.map((item: any) => [
+      ...brokers.data.map((item: EventBrokerServiceDetail) => [
         item.name,
         item.id,
         item.type,
