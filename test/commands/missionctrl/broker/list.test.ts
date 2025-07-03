@@ -20,14 +20,14 @@ function anBroker(brokerName: string, brokerId: string) {
 }
 
 describe('missionctrl:broker:list', () => {
-  let scConnStub: any
+  let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
-    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnStub.restore();
+    scConnStub.restore()
   })
 
   it('runs missionctrl:broker:list cmd', async () => {

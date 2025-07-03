@@ -14,13 +14,13 @@ export default class PlatformEnvUpdate extends Command {
   Token Permissions: [ environments:edit ]
   `
   static override examples = [
-    '<%= config.bin %> <%= command.id %> --name=MyEnvName --new-name=MyNewEnvName --desc=\"My description to update" --isDefault',
-    '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --desc=\"My description to update" --isDefault'
+    '<%= config.bin %> <%= command.id %> --name=MyEnvName --new-name=MyNewEnvName --desc="My description to update" --isDefault',
+    '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault'
   ]
   static override flags = {
     desc: Flags.string({ char: 'd', description: 'Description of the environment to update.' }),
     'env-id': Flags.string({ char: 'e', description: 'Id of the environment.', exactlyOne: ['env-id', 'name'] }),
-    isDefault: Flags.boolean({ description: 'Indicates this is the organization’s default environment. The default value is false.' }),
+    isDefault: Flags.boolean({ description: `Indicates this is the organization's default environment. The default value is false.` }),
     name: Flags.string({ char: 'n', description: 'Current name of the environment.', exactlyOne: ['env-id', 'name'] }),
     'new-name': Flags.string({ description: 'New name of the environment.' }),
   }
@@ -34,13 +34,10 @@ export default class PlatformEnvUpdate extends Command {
     const newName = flags['new-name'] ?? ''
 
     // API body
-    let body: { [key: string]: any } = {}
-    body['isDefault'] = flags.isDefault ?? false
-    if (desc) {
-      body['description'] = desc
-    }
-    if (newName) {
-      body['name'] = newName
+    const body = {
+      ...(flags.isDefault && { isDefault: flags.isDefault }),
+      ...(desc && { description: desc}),
+      ...(newName && { name: newName}),
     }
 
     const conn = new ScConnection()

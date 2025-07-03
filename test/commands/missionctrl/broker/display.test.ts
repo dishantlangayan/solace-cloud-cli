@@ -21,16 +21,16 @@ function anBroker(brokerName: string, brokerId: string) {
 }
 
 describe('missionctrl:broker:display', () => {
-  let brokerName: string = 'Default'
-  let brokerId: string = 'MyTestBrokerId'
-  let scConnStub: any
+  const brokerName: string = 'Default'
+  const brokerId: string = 'MyTestBrokerId'
+  let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
-    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnStub.restore();
+    scConnStub.restore()
   })
 
   it('runs missionctrl:broker:display cmd', async () => {
@@ -63,8 +63,7 @@ describe('missionctrl:broker:display', () => {
       },
     }
 
-
-    const { stdout } = await runCommand('missionctrl:broker:display -b ${brokerId}')
+    const { stdout } = await runCommand(`missionctrl:broker:display -b ${brokerId}`)
     expect(stdout).to.contain(table(tableRows, config))
   })
 })

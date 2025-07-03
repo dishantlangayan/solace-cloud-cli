@@ -20,14 +20,14 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:list', () => {
-  let scConnStub: any
+  let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
-    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnStub.restore();
+    scConnStub.restore()
   })
 
   it('runs platform:env:list', async () => {

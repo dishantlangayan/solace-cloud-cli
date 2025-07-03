@@ -24,14 +24,14 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:display', () => {
-  let scConnStub: any
+  let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
-    scConnStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnStub.restore();
+    scConnStub.restore()
   })
 
   it('runs platform:env:display', async () => {
@@ -56,12 +56,10 @@ describe('platform:env:display', () => {
     }
     scConnStub.returns(Promise.resolve(envs))
 
-    let tableRows: any[] = [['Key', 'Value']]
-    tableRows = tableRows.concat(Object.entries(envs.data[0])
-      .map(([key, value]) => ([
-        camelCaseToTitleCase(key),
-        value
-      ])))
+    const tableRows = [
+      ['Key', 'Value'],
+      ...Object.entries(envs.data[0]).map(([key, value]) => [camelCaseToTitleCase(key), value]),
+    ]
 
     const config = {
       columns: {

@@ -22,18 +22,18 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:update', () => {
-  let scConnUpdateStub: any
-  let scConnGetStub: any
-  let envName: string = 'MyTestEnvironment'
+  let scConnUpdateStub: sinon.SinonStub
+  let scConnGetStub: sinon.SinonStub
+  const envName: string = 'MyTestEnvironment'
 
   beforeEach(() => {
-    scConnUpdateStub = sinon.stub(ScConnection.prototype, <any>'put');
-    scConnGetStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnUpdateStub = sinon.stub(ScConnection.prototype, 'put')
+    scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnUpdateStub.restore();
-    scConnGetStub.restore();
+    scConnUpdateStub.restore()
+    scConnGetStub.restore()
   })
 
   it('runs platform:env:update cmd', async () => {
@@ -56,7 +56,7 @@ describe('platform:env:update', () => {
       }
     }
     
-    let updateSuccessMsg = `Environment with id 'id${envName}' has been updated successfully.`
+    const updateSuccessMsg = `Environment with id 'id${envName}' has been updated successfully.`
     scConnGetStub.returns(Promise.resolve(envs))
     scConnUpdateStub.returns(updateSuccessMsg)
 
@@ -65,7 +65,7 @@ describe('platform:env:update', () => {
   })
 
   it(`runs platform:env:update --env-id id${envName} --desc "This is a test description."`, async () => {
-    let updateSuccessMsg = `Environment with id 'id${envName}' has been updated successfully.`
+    const updateSuccessMsg = `Environment with id 'id${envName}' has been updated successfully.`
     scConnUpdateStub.returns(updateSuccessMsg)
 
     const { stdout } = await runCommand(`platform:env:update --env-id id${envName} --desc "This is a test description."`)

@@ -5,15 +5,15 @@ import * as sinon from 'sinon'
 import { ScConnection } from '../../../../src/util/sc-connection.js'
 
 describe('platform:env:create', () => {
-  let scConnStub: any
-  let envName: string = 'MyTestEnvironment'
+  let scConnStub: sinon.SinonStub
+  const envName: string = 'MyTestEnvironment'
 
   beforeEach(() => {
-    scConnStub = sinon.stub(ScConnection.prototype, <any>'post');
-  });
+    scConnStub = sinon.stub(ScConnection.prototype, 'post')
+  })
 
   afterEach(() => {
-    scConnStub.restore();
+    scConnStub.restore()
   })
 
   it('runs platform:env:create', async () => {
@@ -22,7 +22,7 @@ describe('platform:env:create', () => {
   })
 
   it(`runs platform:env:create  --name=${envName}`, async () => {
-    let createOutputMsg = 'Environment created successfully.'
+    const createOutputMsg = 'Environment created successfully.'
     scConnStub.returns(createOutputMsg)
 
     const { stdout } = await runCommand(`platform:env:create --name=${envName}`)

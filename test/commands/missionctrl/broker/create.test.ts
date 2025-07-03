@@ -4,15 +4,7 @@ import * as sinon from 'sinon'
 
 import { ScConnection } from '../../../../src/util/sc-connection.js'
 
-describe('missionctrl:broker:create', () => {
-  let scConnPostStub: any
-  let scConnGetStub: any
-  let envName: string = 'MyTestEnvironment'
-  let brokerName: string = 'MyEventBrokerName'
-  let brokerDC: string = 'eks-ca-central-1a'
-  let brokerSvcClassId: string = 'DEVELOPER'
-
-  function anEnv(name: string, isDefault: boolean, isProd: boolean) {
+function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   return {
     bgColor: '#DA162D',
     createdBy: 'someuser',
@@ -29,10 +21,18 @@ describe('missionctrl:broker:create', () => {
   }
 }
 
+describe('missionctrl:broker:create', () => {
+  let scConnPostStub: sinon.SinonStub
+  let scConnGetStub: sinon.SinonStub
+  const envName: string = 'MyTestEnvironment'
+  const brokerName: string = 'MyEventBrokerName'
+  const brokerDC: string = 'eks-ca-central-1a'
+  const brokerSvcClassId: string = 'DEVELOPER'
+
   beforeEach(() => {
-    scConnPostStub = sinon.stub(ScConnection.prototype, <any>'post')
-    scConnGetStub = sinon.stub(ScConnection.prototype, <any>'get')
-  });
+    scConnPostStub = sinon.stub(ScConnection.prototype, 'post')
+    scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
     scConnPostStub.restore()
@@ -45,7 +45,7 @@ describe('missionctrl:broker:create', () => {
   })
 
   it(`runs missionctrl:broker:create -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`, async () => {
-    let createOutputMsg = 'Event broker service created successfully.'
+    const createOutputMsg = 'Event broker service created successfully.'
     scConnPostStub.returns(createOutputMsg)
 
     const { stdout } = await runCommand(`missionctrl:broker:create -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`)
@@ -68,8 +68,8 @@ describe('missionctrl:broker:create', () => {
       }
     }
     scConnGetStub.returns(Promise.resolve(envs))
-    
-    let createOutputMsg = 'Event broker service created successfully.'
+
+    const createOutputMsg = 'Event broker service created successfully.'
     scConnPostStub.returns(createOutputMsg)
 
     const { stdout } = await runCommand(`missionctrl:broker:create -e ${envName} -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`)

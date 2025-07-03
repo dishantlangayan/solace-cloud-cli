@@ -22,18 +22,18 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:delete', () => {
-  let scConnDeleteStub: any
-  let scConnGetStub: any
-  let envName: string = 'MyTestEnvironment'
+  let scConnDeleteStub: sinon.SinonStub
+  let scConnGetStub: sinon.SinonStub
+  const envName: string = 'MyTestEnvironment'
 
   beforeEach(() => {
-    scConnDeleteStub = sinon.stub(ScConnection.prototype, <any>'delete');
-    scConnGetStub = sinon.stub(ScConnection.prototype, <any>'get');
-  });
+    scConnDeleteStub = sinon.stub(ScConnection.prototype, 'delete')
+    scConnGetStub = sinon.stub(ScConnection.prototype, 'get')
+  })
 
   afterEach(() => {
-    scConnDeleteStub.restore();
-    scConnGetStub.restore();
+    scConnDeleteStub.restore()
+    scConnGetStub.restore()
   })
 
   it('runs platform:env:delete cmd', async () => {
@@ -56,7 +56,7 @@ describe('platform:env:delete', () => {
       }
     }
 
-    let deleteSuccessMsg = `Environment with id 'id${envName}' has been deleted successfully.`
+    const deleteSuccessMsg = `Environment with id 'id${envName}' has been deleted successfully.`
     scConnGetStub.returns(Promise.resolve(envs))
     scConnDeleteStub.returns(deleteSuccessMsg)
 
@@ -65,7 +65,7 @@ describe('platform:env:delete', () => {
   })
 
   it(`runs platform:env:delete --env-id id${envName}`, async () => {
-    let deleteSuccessMsg = `Environment with id 'id${envName}' has been deleted successfully.`
+    const deleteSuccessMsg = `Environment with id 'id${envName}' has been deleted successfully.`
     scConnDeleteStub.returns(deleteSuccessMsg)
 
     const { stdout } = await runCommand(`platform:env:delete --env-id id${envName}`)
