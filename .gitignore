@@ -7,7 +7,8 @@
 /node_modules
 oclif.manifest.json
 
-
+# Ignore tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
 
 yarn.lock
 pnpm-lock.yaml
