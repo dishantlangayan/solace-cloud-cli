@@ -21,7 +21,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.0.0 darwin-arm64 node-v23.7.0
+@dishantlangayan/solace-cloud-cli/0.0.1 darwin-x64 node-v23.10.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -69,7 +69,7 @@ DESCRIPTION
   Display help for sc.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.28/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
 
 ## `sc missionctrl broker create`
 
@@ -106,7 +106,7 @@ EXAMPLES
   $ sc missionctrl broker create --datacenter-id=MyDatacenterId --name=MyBrokerName --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -114,10 +114,10 @@ Delete a service using its unique identifier.
 
 ```
 USAGE
-  $ sc missionctrl broker delete [-e <value>] [-n <value>]
+  $ sc missionctrl broker delete [-b <value>] [-n <value>]
 
 FLAGS
-  -e, --broker-id=<value>  Id of the event broker service.
+  -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
 
 DESCRIPTION
@@ -133,7 +133,7 @@ EXAMPLES
   $ sc missionctrl broker delete --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -159,7 +159,7 @@ EXAMPLES
   $ sc missionctrl broker display
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -199,7 +199,7 @@ EXAMPLES
   $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc platform env create`
 
@@ -227,7 +227,7 @@ EXAMPLES
   $ sc platform env create --name=MyEnvironment --desc="My environment description" --isDefault --isProduction
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -252,7 +252,7 @@ EXAMPLES
   $ sc platform env delete --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -280,7 +280,7 @@ EXAMPLES
   $ sc platform env display --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -313,7 +313,7 @@ EXAMPLES
   $ sc platform env list --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -327,7 +327,7 @@ FLAGS
   -d, --desc=<value>      Description of the environment to update.
   -e, --env-id=<value>    Id of the environment.
   -n, --name=<value>      Current name of the environment.
-      --isDefault         Indicates this is the organization’s default environment. The default value is false.
+      --isDefault         Indicates this is the organization's default environment. The default value is false.
       --new-name=<value>  New name of the environment.
 
 DESCRIPTION
@@ -344,32 +344,7 @@ EXAMPLES
   $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/update.ts)_
-
-## `sc help [COMMAND]`
-
-Display help for sc.
-
-```
-USAGE
-  $ sc platform env update [FILE] [-f] [-n <value>]
-
-ARGUMENTS
-  FILE  file to read
-
-FLAGS
-  -f, --force
-  -n, --name=<value>  name to print
-
-DESCRIPTION
-  This command has not been implemented yet. It is a placeholder for future functionality related to updating platform
-  environments.
-
-EXAMPLES
-  $ sc platform env update
-```
-
-_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.0/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.1/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
@@ -392,7 +367,7 @@ EXAMPLES
   $ sc plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/index.ts)_
 
 ## `sc plugins add PLUGIN`
 
@@ -466,7 +441,7 @@ EXAMPLES
   $ sc plugins inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/inspect.ts)_
 
 ## `sc plugins install PLUGIN`
 
@@ -515,7 +490,7 @@ EXAMPLES
     $ sc plugins install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/install.ts)_
 
 ## `sc plugins link PATH`
 
@@ -546,7 +521,7 @@ EXAMPLES
   $ sc plugins link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/link.ts)_
 
 ## `sc plugins remove [PLUGIN]`
 
@@ -587,7 +562,7 @@ FLAGS
   --reinstall  Reinstall all plugins after uninstalling.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/reset.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/reset.ts)_
 
 ## `sc plugins uninstall [PLUGIN]`
 
@@ -615,7 +590,7 @@ EXAMPLES
   $ sc plugins uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/uninstall.ts)_
 
 ## `sc plugins unlink [PLUGIN]`
 
@@ -659,5 +634,5 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.38/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v5.4.43/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
