@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: 
-          node_version: 22
+          node-version: 22
       - name: Check if version already exists
         id: version-check
         run: |
@@ -34,12 +34,12 @@ jobs:
       - name: Setup git
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         run: |
-          apt-get update
-          apt-get install -y git-core
+          sudo apt-get update
+          sudo apt-get install -y git-core
           git --version
           echo "Path is ... $PATH"
-          git config --global user.email "GitHub Actions Bot"
-          git config --global user.name "<>"
+          git config --global user.email "dishantlangayan@gmail.com"
+          git config --global user.name "dishantlangayan"
       - name: Generate oclif README
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         id: oclif-readme
