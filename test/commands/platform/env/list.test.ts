@@ -10,7 +10,7 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   return {
     createdBy: 'someuser',
     createdTime: '2024-09-05T19:54:42.766',
-    description: `This is a description for the the environment ${name}`,
+    description: `This is a description for the environment ${name}`,
     id: `id${name}`,
     isDefault,
     isProduction: isProd,
@@ -102,7 +102,7 @@ describe('platform:env:list', () => {
     }
 
     // Run command
-    const { stdout } = await runCommand('platform:env:list --pageSize=5', '--pageNumber=1')
+    const { stdout } = await runCommand('platform:env:list --pageSize=5 --pageNumber=1')
     expect(stdout).to.contain(table(envArray, config))
   })
 })

@@ -1,11 +1,11 @@
-import {Flags} from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import {table} from 'table'
 
-import {ScCommand} from '../../../sc-command.js'
+// import {ScCommand} from '../../../sc-command.js'
 import {Environment, EnvironmentApiResponse} from '../../../types/environment.js'
 import {ScConnection} from '../../../util/sc-connection.js'
 
-export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
+export default class PlatformEnvList extends Command {
   static override args = {}
   static override description = `Get a list of all Environments. 
   
