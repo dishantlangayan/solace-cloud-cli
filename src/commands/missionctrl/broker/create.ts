@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core'
-import {table} from 'table'
+import { Command, Flags } from '@oclif/core'
+import { table } from 'table'
 
-import {EventBrokerCreateApiResponse, EventBrokerCreateDetail} from '../../../types/broker.js'
-import {camelCaseToTitleCase} from '../../../util/internal.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { EventBrokerCreateApiResponse, EventBrokerCreateDetail } from '../../../types/broker.js'
+import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerCreate extends Command {
   static override args = {}
@@ -22,7 +22,10 @@ Token Permissions: [ \`services:post\` ]`
     'env-name': Flags.string({
       char: 'e',
       description:
-        'The name of the environment environment where you want to create the service. If no name is provided, the service will be created in the default environment.',
+        `The name of the environment environment where you want to create the service. 
+        You can only specify an environment identifier when creating services in a Public Region. 
+        You cannot specify an environment identifier when creating a service in a Dedicated Region. 
+        If no name is provided, the service will be created in the default environment.`,
     }),
     locked: Flags.boolean({
       char: 'l',
@@ -39,7 +42,17 @@ Token Permissions: [ \`services:post\` ]`
       char: 'm',
       description: 'The message VPN name. A default message VPN name is provided when this is not specified.',
     }),
-    name: Flags.string({char: 'n', description: 'Name of the event broker service to create.', required: true}),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the event broker service to create.',
+      required: true
+    }),
+    'redundancy-group-ssl-enabled': Flags.boolean({
+      char: 'r',
+      default: false,
+      description:
+        'Enable or disable SSL for the redundancy group (for mate-link encryption). The default value is false (disabled)',
+    }),
     'service-class-id': Flags.string({
       char: 'c',
       description: 'Supported service classes.',
@@ -52,17 +65,18 @@ Token Permissions: [ \`services:post\` ]`
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(MissionctrlBrokerCreate)
+    const { flags } = await this.parse(MissionctrlBrokerCreate)
 
     const datacenterId = flags['datacenter-id'] ?? ''
-    let envName = flags['env-name'] ?? ''
+    const envName = flags['env-name'] ?? ''
     const locked = flags.locked ?? false
-    // const maxSpoolUsage = flags['max-spool-usage'] ?? ''
-    // const msgVpnName = flags['msg-vpn-name'] ?? ''
+    const maxSpoolUsage = flags['max-spool-usage'] ?? ''
+    const msgVpnName = flags['msg-vpn-name'] ?? ''
     const name = flags.name ?? ''
-    const redundancyGroupSslEnabled = false // This flag is not defined yet, but it is used in the API body
+    const redundancyGroupSslEnabled = flags['redundancy-group-ssl-enabled']
     const serviceClassId = flags['service-class-id'] ?? 'DEVELOPER'
-    // const version = flags.version ?? ''
+    const eventBrokerVersion = flags.version ?? ''
+    let envId: string = ''
 
     const conn = new ScConnection()
 
@@ -72,22 +86,22 @@ Token Permissions: [ \`services:post\` ]`
     // If envName is provided, retrieve the environment ID
     if (envName) {
       const envApiUrl = `/platform/environments?name=${envName}`
-      const envResp = await conn.get<{data: {id: string}[]}>(envApiUrl)
-      if( envResp.data.length > 1) {
+      const envResp = await conn.get<{ data: { id: string }[] }>(envApiUrl)
+      if (envResp.data.length > 1) {
         this.error(`Multiple environments found with: ${name}. Exactly one environment must match the provided name.`)
       } else {
-        envName = envResp.data[0]?.id
+        envId = envResp.data[0]?.id
       }
     }
 
     // API body
-    const body: Record<string, unknown> = {
-      datacenterId,
-      envName,
-      // eventBrokerVersion: version,
+    const body = {
+      ...(datacenterId && { datacenterId }),
+      ...(envId) && { environmentId: envId },
+      ...(eventBrokerVersion && { eventBrokerVersion }),
       locked,
-      // maxSpoolUsage,
-      // msgVpnName,
+      ...(maxSpoolUsage && { maxSpoolUsage }),
+      ...(msgVpnName && { msgVpnName }),
       name,
       redundancyGroupSslEnabled,
       serviceClassId,
@@ -110,7 +124,7 @@ Token Permissions: [ \`services:post\` ]`
     // Table config
     const config = {
       columns: {
-        1: {width: 50, wrapWord: true},
+        1: { width: 50, wrapWord: true },
       },
       drawHorizontalLine(lineIndex: number, rowCount: number) {
         return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
