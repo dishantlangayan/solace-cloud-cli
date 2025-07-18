@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 
-import {EventBrokerListApiResponse} from '../../../types/broker.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { EventBrokerListApiResponse } from '../../../types/broker.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerDelete extends Command {
   static override args = {}
@@ -15,13 +15,11 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName',
   ]
   static override flags = {
-    // flag for getting environment by id (-e, --env-id)
     'broker-id': Flags.string({
       char: 'b',
       description: 'Id of the event broker service.',
       exactlyOne: ['broker-id', 'name'],
     }),
-    // flag for getting environment by name (-n, --name=VALUE)
     name: Flags.string({
       char: 'n',
       description: 'Name of the event broker service.',
@@ -30,7 +28,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(MissionctrlBrokerDelete)
+    const { flags } = await this.parse(MissionctrlBrokerDelete)
 
     const name = flags.name ?? ''
     const brokerId = flags['broker-id'] ?? ''

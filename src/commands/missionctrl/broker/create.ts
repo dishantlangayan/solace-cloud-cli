@@ -12,7 +12,7 @@ export default class MissionctrlBrokerCreate extends Command {
 Your token must have one of the permissions listed in the Token Permissions.
 
 Token Permissions: [ \`services:post\` ]`
-  static override examples = ['<%= config.bin %> <%= command.id %> --datacenter-id=MyDatacenterId --name=MyBrokerName --service-class-id=DEVELOPER']
+  static override examples = ['<%= config.bin %> <%= command.id %> --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER']
   static override flags = {
     'datacenter-id': Flags.string({
       char: 'd',

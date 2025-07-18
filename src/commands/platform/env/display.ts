@@ -15,10 +15,16 @@ export default class PlatformEnvDisplay extends Command {
   `
   static override examples = ['<%= config.bin %> <%= command.id %> --name=MyEnvName', '<%= config.bin %> <%= command.id %> --env-id=MyEnvId']
   static override flags = {
-    // flag for getting environment by id (-e, --env-id)
-    'env-id': Flags.string({ char: 'e', description: 'Id of the environment.', exactlyOne: ['env-id', 'name'] }),
-    // flag for getting environment by name (-n, --name=VALUE)
-    name: Flags.string({ char: 'n', description: 'Name of the environment.', exactlyOne: ['env-id', 'name'] }),
+    'env-id': Flags.string({
+      char: 'e',
+      description: 'Id of the environment.',
+      exactlyOne: ['env-id', 'name']
+    }),
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the environment.',
+      exactlyOne: ['env-id', 'name']
+    }),
   }
 
   public async run(): Promise<void> {

@@ -18,11 +18,25 @@ export default class PlatformEnvUpdate extends Command {
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault'
   ]
   static override flags = {
-    desc: Flags.string({ char: 'd', description: 'Description of the environment to update.' }),
-    'env-id': Flags.string({ char: 'e', description: 'Id of the environment.', exactlyOne: ['env-id', 'name'] }),
-    isDefault: Flags.boolean({ description: `Indicates this is the organization's default environment. The default value is false.` }),
-    name: Flags.string({ char: 'n', description: 'Current name of the environment.', exactlyOne: ['env-id', 'name'] }),
-    'new-name': Flags.string({ description: 'New name of the environment.' }),
+    desc: Flags.string({ 
+      char: 'd', 
+      description: 'Description of the environment to update.' 
+    }),
+    'env-id': Flags.string({ 
+      char: 'e', 
+      description: 'Id of the environment.', 
+      exactlyOne: ['env-id', 'name'] 
+    }),
+    isDefault: Flags.boolean({ 
+      description: `Indicates this is the organization's default environment. The default value is false.` 
+    }),
+    name: Flags.string({ 
+      char: 'n', description: 'Current name of the environment.', 
+      exactlyOne: ['env-id', 'name'] 
+    }),
+    'new-name': Flags.string({ 
+      description: 'New name of the environment.' 
+    }),
   }
 
   public async run(): Promise<void> {
@@ -36,8 +50,8 @@ export default class PlatformEnvUpdate extends Command {
     // API body
     const body = {
       ...(flags.isDefault && { isDefault: flags.isDefault }),
-      ...(desc && { description: desc}),
-      ...(newName && { name: newName}),
+      ...(desc && { description: desc }),
+      ...(newName && { name: newName }),
     }
 
     const conn = new ScConnection()

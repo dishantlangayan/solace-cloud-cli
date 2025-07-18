@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core'
-import {table} from 'table'
+import { Command, Flags } from '@oclif/core'
+import { table } from 'table'
 
 // import {ScCommand} from '../../../sc-command.js'
-import {Environment, EnvironmentApiResponse} from '../../../types/environment.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { Environment, EnvironmentApiResponse } from '../../../types/environment.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class PlatformEnvList extends Command {
   static override args = {}
@@ -13,9 +13,9 @@ export default class PlatformEnvList extends Command {
   static override examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC']
   static override flags = {
     // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'Name of the environment to match on.'}),
+    name: Flags.string({ char: 'n', description: 'Name of the environment to match on.' }),
     // pageNumber (--pageNumber=VALUE)
-    pageNumber: Flags.integer({description: 'The page number to get. Defaults to 10'}),
+    pageNumber: Flags.integer({ description: 'The page number to get. Defaults to 10' }),
     // pageSize (--pageSize=VALUE)
     pageSize: Flags.integer({
       description: 'The number of environments to get per page. Defaults to 1',
@@ -29,7 +29,7 @@ export default class PlatformEnvList extends Command {
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(PlatformEnvList)
+    const { flags } = await this.parse(PlatformEnvList)
 
     const conn = new ScConnection()
 
@@ -37,7 +37,7 @@ export default class PlatformEnvList extends Command {
     const pageNumber = flags.pageNumber ?? 1
 
     // API url
-    let apiUrl: string = `/platform/environments?pageSize=${pageSize}&pageNumber=${pageNumber}` 
+    let apiUrl: string = `/platform/environments?pageSize=${pageSize}&pageNumber=${pageNumber}`
     if (flags.sort) {
       apiUrl += `&sort=${flags.sort}`
     }
@@ -57,7 +57,7 @@ export default class PlatformEnvList extends Command {
     // Display results as a table
     const config = {
       columns: {
-        4: {width: 50, wrapWord: true},
+        4: { width: 50, wrapWord: true },
       },
     }
     this.log()

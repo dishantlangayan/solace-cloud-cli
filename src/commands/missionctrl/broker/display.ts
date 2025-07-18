@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core'
-import {table} from 'table'
+import { Command, Flags } from '@oclif/core'
+import { table } from 'table'
 
-import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../types/broker.js'
-import {camelCaseToTitleCase} from '../../../util/internal.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
+import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerDisplay extends Command {
   static override args = {}
@@ -27,7 +27,7 @@ export default class MissionctrlBrokerDisplay extends Command {
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(MissionctrlBrokerDisplay)
+    const { flags } = await this.parse(MissionctrlBrokerDisplay)
 
     const name = flags.name ?? ''
     const brokerId = flags['broker-id'] ?? ''
@@ -66,7 +66,7 @@ export default class MissionctrlBrokerDisplay extends Command {
     // Table config
     const config = {
       columns: {
-        1: {width: 50, wrapWord: true},
+        1: { width: 50, wrapWord: true },
       },
       drawHorizontalLine(lineIndex: number, rowCount: number) {
         return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount

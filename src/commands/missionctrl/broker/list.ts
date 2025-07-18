@@ -1,8 +1,8 @@
-import {Command, Flags} from '@oclif/core'
-import {table} from 'table'
+import { Command, Flags } from '@oclif/core'
+import { table } from 'table'
 
-import {EventBrokerListApiResponse, EventBrokerServiceDetail} from '../../../types/broker.js'
-import {ScConnection} from '../../../util/sc-connection.js'
+import { EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
+import { ScConnection } from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerList extends Command {
   static override args = {}
@@ -13,17 +13,18 @@ Your token must have one of the permissions listed in the Token Permissions.
 Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \`services:get:self\` **or** \`services:view\` **or** \`services:view:self\` ]`
   static override examples = ['<%= config.bin %> <%= command.id %> --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc']
   static override flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'Name of the event broker service to match on.'}),
-    // pageNumber (--pageNumber=VALUE)
-    pageNumber: Flags.integer({description: 'The page number to get. Defaults to 1'}),
-    // pageSize (--pageSize=VALUE)
+    name: Flags.string({ 
+      char: 'n', 
+      description: 'Name of the event broker service to match on.' 
+    }),
+    pageNumber: Flags.integer({ 
+      description: 'The page number to get. Defaults to 1' 
+    }),
     pageSize: Flags.integer({
       description: 'The number of event broker services to return per page. Defaults to 100',
       max: 100,
       min: 1,
     }),
-    // sort (--sort=VALUE)
     sort: Flags.string({
       description: `Sort the returned event broker services by attribute.
 
@@ -35,7 +36,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(MissionctrlBrokerList)
+    const { flags } = await this.parse(MissionctrlBrokerList)
 
     const conn = new ScConnection()
 
