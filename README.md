@@ -239,7 +239,8 @@ Create a new environment.
 
 ```
 USAGE
-  $ sc platform env create -n <value> [-d <value>] [--isDefault] [--isProduction]
+  $ sc platform env create -n <value> [--json] [--log-level debug|warn|error|info|trace] [-d <value>] [--isDefault]
+    [--isProduction]
 
 FLAGS
   -d, --desc=<value>  Description of the environment to create.
@@ -249,6 +250,11 @@ FLAGS
                       This is an immutable field. If an environment needs to be migrated,
                       architecture can be migrated to a new environment with the desired
                       environment type instead.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Create a new environment.
@@ -267,11 +273,16 @@ Delete an environment using either its name or unique identifier. The default en
 
 ```
 USAGE
-  $ sc platform env delete [-e <value>] [-n <value>]
+  $ sc platform env delete [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>]
 
 FLAGS
   -e, --env-id=<value>  Id of the environment.
   -n, --name=<value>    Name of the environment.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Delete an environment using either its name or unique identifier. The default environment cannot be deleted.
@@ -292,11 +303,16 @@ Display information about an Environment.
 
 ```
 USAGE
-  $ sc platform env display [-e <value>] [-n <value>]
+  $ sc platform env display [--json] [--log-level debug|warn|error|info|trace] [-e <value>] [-n <value>]
 
 FLAGS
   -e, --env-id=<value>  Id of the environment.
   -n, --name=<value>    Name of the environment.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Display information about an Environment.
@@ -304,7 +320,6 @@ DESCRIPTION
   Use either the Environment's ID (--env-id) or name of the Environment (--name).
 
   Required token permissions: [ environments:view ]
-
 
 EXAMPLES
   $ sc platform env display --name=MyEnvName
@@ -320,13 +335,19 @@ Get a list of all Environments.
 
 ```
 USAGE
-  $ sc platform env list [-n <value>] [--pageNumber <value>] [--pageSize <value>] [--sort <value>]
+  $ sc platform env list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [-p <value>] [-s <value>]
+    [--sort <value>]
 
 FLAGS
   -n, --name=<value>        Name of the environment to match on.
-      --pageNumber=<value>  The page number to get. Defaults to 10
-      --pageSize=<value>    The number of environments to get per page. Defaults to 1
+  -p, --pageNumber=<value>  The page number to get. Defaults to 10
+  -s, --pageSize=<value>    The number of environments to get per page. Defaults to 1
       --sort=<value>        The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Get a list of all Environments.
@@ -347,7 +368,8 @@ Modify an environment's attributes
 
 ```
 USAGE
-  $ sc platform env update [-d <value>] [-e <value>] [--isDefault] [-n <value>] [--new-name <value>]
+  $ sc platform env update [--json] [--log-level debug|warn|error|info|trace] [-d <value>] [-e <value>] [--isDefault] [-n
+    <value>] [--new-name <value>]
 
 FLAGS
   -d, --desc=<value>      Description of the environment to update.
@@ -355,6 +377,11 @@ FLAGS
   -n, --name=<value>      Current name of the environment.
       --isDefault         Indicates this is the organization's default environment. The default value is false.
       --new-name=<value>  New name of the environment.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Modify an environment's attributes

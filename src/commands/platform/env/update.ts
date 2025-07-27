@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { Environment, EnvironmentApiResponse, EnvironmentDetail } from '../../../types/environment.js'
-import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class PlatformEnvUpdate extends Command {
+export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdate> {
   static override args = {}
   static override description = `Modify an environment's attributes
   
@@ -18,28 +18,28 @@ export default class PlatformEnvUpdate extends Command {
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault'
   ]
   static override flags = {
-    desc: Flags.string({ 
-      char: 'd', 
-      description: 'Description of the environment to update.' 
+    desc: Flags.string({
+      char: 'd',
+      description: 'Description of the environment to update.'
     }),
-    'env-id': Flags.string({ 
-      char: 'e', 
-      description: 'Id of the environment.', 
-      exactlyOne: ['env-id', 'name'] 
+    'env-id': Flags.string({
+      char: 'e',
+      description: 'Id of the environment.',
+      exactlyOne: ['env-id', 'name']
     }),
-    isDefault: Flags.boolean({ 
-      description: `Indicates this is the organization's default environment. The default value is false.` 
+    isDefault: Flags.boolean({
+      description: `Indicates this is the organization's default environment. The default value is false.`
     }),
-    name: Flags.string({ 
-      char: 'n', description: 'Current name of the environment.', 
-      exactlyOne: ['env-id', 'name'] 
+    name: Flags.string({
+      char: 'n', description: 'Current name of the environment.',
+      exactlyOne: ['env-id', 'name']
     }),
-    'new-name': Flags.string({ 
-      description: 'New name of the environment.' 
+    'new-name': Flags.string({
+      description: 'New name of the environment.'
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<Environment> {
     const { flags } = await this.parse(PlatformEnvUpdate)
 
     const desc = flags.desc ?? ''
@@ -78,24 +78,15 @@ export default class PlatformEnvUpdate extends Command {
     const resp = await conn.put<EnvironmentDetail>(apiUrl, body)
     this.log(`Environment with id '${envIdToUdpate}' has been updated successfully.`)
     this.print(resp.data)
+    return resp.data
   }
 
   private print(environment: Environment): void {
-    this.log()
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(environment).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
-
-    // Table config
-    const config = {
-      columns: {
-        1: { width: 50, wrapWord: true },
-      },
-      drawHorizontalLine(lineIndex: number, rowCount: number) {
-        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
-      },
-    }
-    this.log(table(tableRows, config))
+    this.log()
+    this.log(renderKeyValueTable(tableRows, { 1: { width: 50, wrapWord: true } }))
   }
 }

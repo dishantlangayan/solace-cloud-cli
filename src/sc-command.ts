@@ -11,7 +11,6 @@ export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
  * All implementations of this class need to implement the run() method.
  *
  */
-
 export abstract class ScCommand<T extends typeof Command> extends Command {
   // define flags that can be inherited by any command that extends BaseCommand
   static baseFlags = {

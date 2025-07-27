@@ -1,34 +1,37 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
-// import {ScCommand} from '../../../sc-command.js'
+import { ScCommand } from '../../../sc-command.js'
 import { Environment, EnvironmentApiResponse } from '../../../types/environment.js'
+import { renderTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class PlatformEnvList extends Command {
+export default class PlatformEnvList extends ScCommand<typeof PlatformEnvList> {
   static override args = {}
   static override description = `Get a list of all Environments. 
   
   Required token permissions: [ environments:view ]`
   static override examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC']
   static override flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({ char: 'n', description: 'Name of the environment to match on.' }),
-    // pageNumber (--pageNumber=VALUE)
-    pageNumber: Flags.integer({ description: 'The page number to get. Defaults to 10' }),
-    // pageSize (--pageSize=VALUE)
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the environment to match on.'
+    }),
+    pageNumber: Flags.integer({
+      char: 'p',
+      description: 'The page number to get. Defaults to 10'
+    }),
     pageSize: Flags.integer({
+      char: 's',
       description: 'The number of environments to get per page. Defaults to 1',
       max: 100,
       min: 1,
     }),
-    // sort (--sort=VALUE)
     sort: Flags.string({
       description: 'The query (fieldName:<ASC/DESC>) used to sort the environment list in the response.',
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<Environment[]> {
     const { flags } = await this.parse(PlatformEnvList)
 
     const conn = new ScConnection()
@@ -46,21 +49,21 @@ export default class PlatformEnvList extends Command {
     const resp = await conn.get<EnvironmentApiResponse>(apiUrl)
 
     // Array to output as table
-    const envArray = [['Name', 'Id', 'Is Default', 'Is Production', 'Description'], ...resp.data.map((item: Environment) => [
-      item.name,
-      item.id,
-      item.isDefault,
-      item.isProduction,
-      item.description,
-    ])]
+    const envArray = [
+      ['Name', 'Id', 'Is Default', 'Is Production', 'Description'],
+      ...resp.data.map((item: Environment) => [
+        item.name,
+        item.id,
+        item.isDefault,
+        item.isProduction,
+        item.description,
+      ])]
 
     // Display results as a table
-    const config = {
-      columns: {
-        4: { width: 50, wrapWord: true },
-      },
-    }
     this.log()
-    this.log(table(envArray, config))
+    this.log(renderTable(envArray, { 4: { width: 50, wrapWord: true } }))
+
+    // Return raw json if --json flag is set
+    return resp.data
   }
 }

@@ -22,6 +22,7 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:update', () => {
+  process.env.SC_ACCESS_TOKEN = 'TEST'
   let scConnUpdateStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'

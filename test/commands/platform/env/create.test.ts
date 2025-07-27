@@ -5,6 +5,7 @@ import * as sinon from 'sinon'
 import { ScConnection } from '../../../../src/util/sc-connection.js'
 
 describe('platform:env:create', () => {
+  process.env.SC_ACCESS_TOKEN = 'TEST'
   let scConnStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
 

@@ -24,6 +24,7 @@ function anEnv(name: string, isDefault: boolean, isProd: boolean) {
 }
 
 describe('platform:env:display', () => {
+  process.env.SC_ACCESS_TOKEN = 'TEST'
   let scConnStub: sinon.SinonStub
 
   beforeEach(() => {

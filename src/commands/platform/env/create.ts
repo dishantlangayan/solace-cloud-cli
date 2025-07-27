@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { Environment, EnvironmentDetail } from '../../../types/environment.js'
-import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class PlatformEnvCreate extends Command {
+export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreate> {
   static override args = {}
   static override description = `Create a new environment.
 
@@ -32,7 +32,7 @@ export default class PlatformEnvCreate extends Command {
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<Environment> {
     const { flags } = await this.parse(PlatformEnvCreate)
 
     const name = flags.name ?? ''
@@ -58,24 +58,17 @@ export default class PlatformEnvCreate extends Command {
     // Display results
     this.log('Environment created successfully.')
     this.print(resp.data)
+
+    // Return raw json if --json flag is set
+    return resp.data
   }
 
   private print(environment: Environment): void {
-    this.log()
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(environment).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
-
-    // Table config
-    const config = {
-      columns: {
-        1: { width: 50, wrapWord: true },
-      },
-      drawHorizontalLine(lineIndex: number, rowCount: number) {
-        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
-      },
-    }
-    this.log(table(tableRows, config))
+    this.log()
+    this.log(renderKeyValueTable(tableRows, { 1: { width: 50, wrapWord: true } }))
   }
 }
