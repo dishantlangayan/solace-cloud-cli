@@ -2,27 +2,11 @@ import { runCommand } from '@oclif/test'
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 
-import { ScConnection } from '../../../../src/util/sc-connection.js'
-
-function anEnv(name: string, isDefault: boolean, isProd: boolean) {
-  return {
-    bgColor: '#DA162D',
-    createdBy: 'someuser',
-    createdTime: '2024-09-05T19:54:42.766',
-    description: `This is a description for the the environment ${name}`,
-    fgColor: '#FFFFFF',
-    icon: 'ROCKET_LAUNCH',
-    id: `id${name}`,
-    isDefault,
-    isProduction: isProd,
-    name,
-    updatedBy: 'someuser',
-    updatedTime: '2024-09-05T19:54:42.766',
-  }
-}
+import { ScConnection } from '../../../../src/util/sc-connection'
+import { anEnv, setEnvVariables } from '../../../util/test-utils'
 
 describe('platform:env:update', () => {
-  process.env.SC_ACCESS_TOKEN = 'TEST'
+  setEnvVariables()
   let scConnUpdateStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
@@ -56,7 +40,7 @@ describe('platform:env:update', () => {
         }
       }
     }
-    
+
     const updateSuccessMsg = `Environment with id 'id${envName}' has been updated successfully.`
     scConnGetStub.returns(Promise.resolve(envs))
     scConnUpdateStub.returns(updateSuccessMsg)

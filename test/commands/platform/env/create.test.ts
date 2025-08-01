@@ -2,10 +2,11 @@ import { runCommand } from '@oclif/test'
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 
-import { ScConnection } from '../../../../src/util/sc-connection.js'
+import { ScConnection } from '../../../../src/util/sc-connection'
+import { setEnvVariables } from '../../../util/test-utils'
 
 describe('platform:env:create', () => {
-  process.env.SC_ACCESS_TOKEN = 'TEST'
+  setEnvVariables()
   let scConnStub: sinon.SinonStub
   const envName: string = 'MyTestEnvironment'
 

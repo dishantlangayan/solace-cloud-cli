@@ -1,27 +1,14 @@
 import { runCommand } from '@oclif/test'
 import { expect } from 'chai'
 import * as sinon from 'sinon'
-import { table } from 'table'
 
 import { Environment } from '../../../../src/types/environment'
+import { renderTable } from '../../../../src/util/internal'
 import { ScConnection } from '../../../../src/util/sc-connection'
-
-function anEnv(name: string, isDefault: boolean, isProd: boolean) {
-  return {
-    createdBy: 'someuser',
-    createdTime: '2024-09-05T19:54:42.766',
-    description: `This is a description for the environment ${name}`,
-    id: `id${name}`,
-    isDefault,
-    isProduction: isProd,
-    name,
-    updateddBy: 'someuser',
-    updatedTime: '2024-09-05T19:54:42.766',
-  }
-}
+import { anEnv, setEnvVariables } from '../../../util/test-utils'
 
 describe('platform:env:list', () => {
-  process.env.SC_ACCESS_TOKEN = 'TEST'
+  setEnvVariables()
   let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
@@ -59,14 +46,9 @@ describe('platform:env:list', () => {
         item.description]),
     ]
 
-    const config = {
-      columns: {
-        4: { width: 50, wrapWord: true }
-      }
-    }
     // Run command
     const { stdout } = await runCommand('platform:env:list')
-    expect(stdout).to.contain(table(envArray, config))
+    expect(stdout).to.contain(renderTable(envArray, { 4: { width: 50, wrapWord: true } }))
   })
 
   it('runs platform:env:list --pageSize=5 --pageNumber=1', async () => {
@@ -96,14 +78,8 @@ describe('platform:env:list', () => {
         item.description]),
     ]
 
-    const config = {
-      columns: {
-        4: { width: 50, wrapWord: true }
-      }
-    }
-
     // Run command
     const { stdout } = await runCommand('platform:env:list --pageSize=5 --pageNumber=1')
-    expect(stdout).to.contain(table(envArray, config))
+    expect(stdout).to.contain(renderTable(envArray, { 4: { width: 50, wrapWord: true } }))
   })
 })
