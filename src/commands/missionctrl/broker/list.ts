@@ -1,10 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
+import { renderTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class MissionctrlBrokerList extends Command {
+export default class MissionctrlBrokerList extends ScCommand<typeof MissionctrlBrokerList> {
   static override args = {}
   static override description = `Get a listing of event broker services.
 
@@ -13,12 +14,12 @@ Your token must have one of the permissions listed in the Token Permissions.
 Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \`services:get:self\` **or** \`services:view\` **or** \`services:view:self\` ]`
   static override examples = ['<%= config.bin %> <%= command.id %> --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc']
   static override flags = {
-    name: Flags.string({ 
-      char: 'n', 
-      description: 'Name of the event broker service to match on.' 
+    name: Flags.string({
+      char: 'n',
+      description: 'Name of the event broker service to match on.'
     }),
-    pageNumber: Flags.integer({ 
-      description: 'The page number to get. Defaults to 1' 
+    pageNumber: Flags.integer({
+      description: 'The page number to get. Defaults to 1'
     }),
     pageSize: Flags.integer({
       description: 'The number of event broker services to return per page. Defaults to 100',
@@ -35,7 +36,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<EventBrokerServiceDetail[]> {
     const { flags } = await this.parse(MissionctrlBrokerList)
 
     const conn = new ScConnection()
@@ -71,6 +72,9 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
     ]
     // Display results as a table
     this.log()
-    this.log(table(brokerArray))
+    this.log(renderTable(brokerArray))
+
+    // Return raw json if --json flag is set
+    return resp.data
   }
 }

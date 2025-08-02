@@ -46,6 +46,6 @@ describe('platform:env:display', () => {
     ]
 
     const { stdout } = await runCommand(`platform:env:display --name=${envName}`)
-    expect(stdout).to.contain(renderKeyValueTable(tableRows, { 1: { width: 50, wrapWord: true } }))
+    expect(stdout).to.contain(renderKeyValueTable(tableRows))
   })
 })

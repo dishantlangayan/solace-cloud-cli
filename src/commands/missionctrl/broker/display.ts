@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
-import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class MissionctrlBrokerDisplay extends Command {
+export default class MissionctrlBrokerDisplay extends ScCommand<typeof MissionctrlBrokerDisplay> {
   static override args = {}
   static override description = `Get the details of an event broker service using its identifier or name.
   
@@ -26,7 +26,7 @@ export default class MissionctrlBrokerDisplay extends Command {
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<EventBrokerServiceDetail[]> {
     const { flags } = await this.parse(MissionctrlBrokerDisplay)
 
     const name = flags.name ?? ''
@@ -39,11 +39,13 @@ export default class MissionctrlBrokerDisplay extends Command {
 
     // If broker name provided, get all brokers matching provided name
     // If broker id provided, get broker with that id
+    let rawResp: EventBrokerServiceDetail[]
     if (brokerId) {
       // API call to get broker by id
       apiUrl += `/${brokerId}`
       const resp = await conn.get<EventBrokerServiceDetail>(apiUrl)
       this.print(resp)
+      rawResp = [resp]
     } else if (name) {
       // API call to get broker by name
       apiUrl += `?customAttributes=name=="${name}"`
@@ -51,27 +53,22 @@ export default class MissionctrlBrokerDisplay extends Command {
       for (const broker of resp.data) {
         this.print(broker)
       }
+
+      rawResp = resp.data
     } else {
       this.error('Either --broker-id or --name must be provided.')
     }
+
+    // Return raw json if --json flag is set
+    return rawResp
   }
 
   private print(broker: EventBrokerServiceDetail): void {
-    this.log()
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
-
-    // Table config
-    const config = {
-      columns: {
-        1: { width: 50, wrapWord: true },
-      },
-      drawHorizontalLine(lineIndex: number, rowCount: number) {
-        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
-      },
-    }
-    this.log(table(tableRows, config))
+    this.log()
+    this.log(renderKeyValueTable(tableRows))
   }
 }

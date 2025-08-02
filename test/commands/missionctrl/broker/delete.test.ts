@@ -3,8 +3,10 @@ import { expect } from 'chai'
 import * as sinon from 'sinon'
 
 import { ScConnection } from '../../../../src/util/sc-connection.js'
+import { setEnvVariables } from '../../../util/test-utils'
 
 describe('missionctrl:broker:delete', () => {
+  setEnvVariables()
   let scConnDeleteStub: sinon.SinonStub
   let scConnGetStub: sinon.SinonStub
   const brokerId: string = 'MyTestBrokerId'

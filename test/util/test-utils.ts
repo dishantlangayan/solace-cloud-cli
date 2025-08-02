@@ -1,5 +1,5 @@
 export function setEnvVariables(): void {
-    process.env.SC_ACCESS_TOKEN = 'TEST'
+  process.env.SC_ACCESS_TOKEN = 'TEST'
 }
 
 export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
@@ -16,5 +16,20 @@ export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
     name,
     updatedBy: 'someuser',
     updatedTime: '2024-09-05T19:54:42.766',
+  }
+}
+
+export function aBroker(brokerId: string, brokerName: string,) {
+  return {
+    completedTime: '',
+    createdBy: 'test',
+    createdTime: '2024-09-05T19:54:42.766',
+    id: brokerId,
+    name: brokerName,
+    operationType: '',
+    resourceId: '',
+    resourceType: '',
+    status: '',
+    type: '',
   }
 }

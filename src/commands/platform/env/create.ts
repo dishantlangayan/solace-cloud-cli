@@ -69,6 +69,6 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
       ...Object.entries(environment).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
     this.log()
-    this.log(renderKeyValueTable(tableRows, { 1: { width: 50, wrapWord: true } }))
+    this.log(renderKeyValueTable(tableRows))
   }
 }

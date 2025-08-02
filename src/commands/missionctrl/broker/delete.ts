@@ -1,9 +1,10 @@
-import { Command, Flags } from '@oclif/core'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { EventBrokerListApiResponse } from '../../../types/broker.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class MissionctrlBrokerDelete extends Command {
+export default class MissionctrlBrokerDelete extends ScCommand<typeof MissionctrlBrokerDelete> {
   static override args = {}
   static override description = `Delete a service using its unique identifier.
 
@@ -27,7 +28,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<{ message: string }> {
     const { flags } = await this.parse(MissionctrlBrokerDelete)
 
     const name = flags.name ?? ''
@@ -57,6 +58,8 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     // API call to delete environment by id
     apiUrl += `/${brokerIdToDelete}`
     await conn.delete<string>(apiUrl)
-    this.log(`Event broker service with id '${brokerIdToDelete}' has been deleted successfully.`)
+    const message = `Event broker service with id '${brokerIdToDelete}' has been deleted successfully.`
+    this.log(message)
+    return { message }
   }
 }

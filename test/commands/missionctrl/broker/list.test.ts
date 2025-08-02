@@ -1,27 +1,14 @@
 import { runCommand } from '@oclif/test'
 import { expect } from 'chai'
 import * as sinon from 'sinon'
-import { table } from 'table'
 
 import { EventBrokerServiceDetail } from '../../../../src/types/broker.js'
+import { renderTable } from '../../../../src/util/internal.js'
 import { ScConnection } from '../../../../src/util/sc-connection.js'
-
-function anBroker(brokerName: string, brokerId: string) {
-  return {
-    completedTime: '',
-    createdBy: 'test',
-    createdTime: '2024-09-05T19:54:42.766',
-    id: brokerId,
-    name: brokerName,
-    operationType: '',
-    resourceId: '',
-    resourceType: '',
-    status: '',
-    type: '',
-  }
-}
+import { aBroker, setEnvVariables } from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:list', () => {
+  setEnvVariables()
   let scConnStub: sinon.SinonStub
 
   beforeEach(() => {
@@ -35,8 +22,8 @@ describe('missionctrl:broker:list', () => {
   it('runs missionctrl:broker:list cmd', async () => {
     // Arrange
     const brokers = {
-      data: [anBroker('Broker1', 'BrokerId1'), anBroker('Broker1', 'BrokerId1'),
-      anBroker('Broker3', 'BrokerId3')],
+      data: [aBroker('BrokerId1', 'Broker1'), aBroker('BrokerId2', 'Broker2'),
+        aBroker('BrokerId3', 'Broker3')],
       meta: {
         pagination: {
           count: 3,
@@ -64,6 +51,6 @@ describe('missionctrl:broker:list', () => {
     ]
 
     const { stdout } = await runCommand('missionctrl:broker:list')
-    expect(stdout).to.contain(table(brokerArray))
+    expect(stdout).to.contain(renderTable(brokerArray))
   })
 })

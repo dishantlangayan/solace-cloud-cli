@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { table } from 'table'
+import { Flags } from '@oclif/core'
 
+import { ScCommand } from '../../../sc-command.js'
 import { EventBrokerCreateApiResponse, EventBrokerCreateDetail } from '../../../types/broker.js'
-import { camelCaseToTitleCase } from '../../../util/internal.js'
+import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
-export default class MissionctrlBrokerCreate extends Command {
+export default class MissionctrlBrokerCreate extends ScCommand<typeof MissionctrlBrokerCreate> {
   static override args = {}
   static override description = `Create an event broker service. You must provide a unique name and select a service class and datacenter. You can optionally define other properties for the event broker service.
 
@@ -64,7 +64,7 @@ Token Permissions: [ \`services:post\` ]`
     }),
   }
 
-  public async run(): Promise<void> {
+  public async run(): Promise<EventBrokerCreateDetail> {
     const { flags } = await this.parse(MissionctrlBrokerCreate)
 
     const datacenterId = flags['datacenter-id'] ?? ''
@@ -112,24 +112,15 @@ Token Permissions: [ \`services:post\` ]`
     // Display results
     this.log('Event broker service created successfully.')
     this.print(resp.data)
+    return resp.data
   }
 
   private print(broker: EventBrokerCreateDetail): void {
-    this.log()
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
-
-    // Table config
-    const config = {
-      columns: {
-        1: { width: 50, wrapWord: true },
-      },
-      drawHorizontalLine(lineIndex: number, rowCount: number) {
-        return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
-      },
-    }
-    this.log(table(tableRows, config))
+    this.log()
+    this.log(renderKeyValueTable(tableRows))
   }
 }

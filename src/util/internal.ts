@@ -14,14 +14,14 @@ export function camelCaseToTitleCase(text: string): string {
 }
 
 export interface ColumnConfig {
-    width?: number;
-    wrapWord?: boolean;
+    width?: number,
+    wrapWord?: boolean
 }
 
 export function renderTable<T>(
     data: T[][],
     columnConfig?: Record<number, ColumnConfig>): string {
-    
+
     // Table config
     const tableConfig = {
         columns: columnConfig
@@ -33,6 +33,10 @@ export function renderTable<T>(
 export function renderKeyValueTable<T>(
     data: T[][],
     columnConfig?: Record<number, ColumnConfig>): string {
+
+    if (columnConfig === undefined) {
+        columnConfig = { 1: { width: 50, wrapWord: true } }
+    }
 
     // Table config
     const tableConfig = {
