@@ -62,3 +62,31 @@ export interface EventBrokerServiceDetail {
   serviceClassId?: string
   type?: string
 }
+
+/**
+ * For Broker Operation Status
+ */
+export interface OperationResponse {
+  data: OperationData;
+}
+
+export interface OperationData {
+  completedTime: string; // ISO timestamp
+  createdBy: string;
+  createdTime: string; // ISO timestamp
+  id: string;
+  operationType: string;
+  progressLogs?: ProgressLog[];
+  resourceId: string;
+  resourceType: string;
+  status: string;
+  type: "operation";
+}
+
+export interface ProgressLog {
+  message: string;
+  status: string;
+  step: string;
+  stepId: string;
+  timestamp: string; // ISO timestamp
+}

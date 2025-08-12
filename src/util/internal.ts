@@ -48,3 +48,12 @@ export function renderKeyValueTable<T>(
     const tableStr = table(data, tableConfig)
     return tableStr
 }
+
+/**
+ * Sleep function.
+ * @param ms Num of milliseconds to wait
+ * @returns 
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
