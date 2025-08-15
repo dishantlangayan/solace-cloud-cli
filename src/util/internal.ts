@@ -6,54 +6,58 @@ import { table } from 'table'
  * @param text Text to transform.
  */
 export function camelCaseToTitleCase(text: string): string {
-    return text
-        .replaceAll(/(^\w|\s\w)/g, (m) => m.toUpperCase())
-        .replaceAll(/([A-Z][a-z]+)/g, ' $1')
-        .replaceAll(/\s{2,}/g, ' ')
-        .trim()
+  return text
+    .replaceAll(/(^\w|\s\w)/g, (m) => m.toUpperCase())
+    .replaceAll(/([A-Z][a-z]+)/g, ' $1')
+    .replaceAll(/\s{2,}/g, ' ')
+    .trim()
 }
 
 export interface ColumnConfig {
-    width?: number,
-    wrapWord?: boolean
+  width?: number,
+  wrapWord?: boolean
 }
 
 export function renderTable<T>(
     data: T[][],
     columnConfig?: Record<number, ColumnConfig>): string {
 
-    // Table config
-    const tableConfig = {
+  // Table config
+  const tableConfig = {
         columns: columnConfig
-    }
-    const tableStr = table(data, tableConfig)
-    return tableStr
+  }
+  const tableStr = table(data, tableConfig)
+  return tableStr
 }
 
 export function renderKeyValueTable<T>(
     data: T[][],
     columnConfig?: Record<number, ColumnConfig>): string {
 
-    if (columnConfig === undefined) {
+  if (columnConfig === undefined) {
         columnConfig = { 1: { width: 50, wrapWord: true } }
-    }
+  }
 
-    // Table config
-    const tableConfig = {
-        columns: columnConfig,
-        drawHorizontalLine(lineIndex: number, rowCount: number) {
-            return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
-        },
-    }
-    const tableStr = table(data, tableConfig)
-    return tableStr
+  // Table config
+  const tableConfig = {
+    columns: columnConfig,
+    drawHorizontalLine(lineIndex: number, rowCount: number) {
+      return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount
+    },
+  }
+  const tableStr = table(data, tableConfig)
+  return tableStr
 }
 
 /**
  * Sleep function.
  * @param ms Num of milliseconds to wait
- * @returns 
+ * @returns Promise that resolves after the specified time
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
+
+export const sleepModule = { sleep }

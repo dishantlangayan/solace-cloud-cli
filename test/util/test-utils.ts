@@ -1,4 +1,4 @@
-import { ProgressLog, OperationResponse } from "../../src/types/broker"
+import { AllOperationResponse, OperationData, OperationResponse, ProgressLog } from "../../src/types/broker"
 
 export function setEnvVariables(): void {
   process.env.SC_ACCESS_TOKEN = 'TEST'
@@ -38,7 +38,20 @@ export function aBroker(brokerId: string, brokerName: string,) {
 
 export function createTestOperationResponse(brokerId: string, numSteps: number, operationId: string, status: string): OperationResponse {
   const opsResp: OperationResponse = {
-    data: {
+    data: createTestOperationData(brokerId, numSteps, operationId, status)
+  }
+  return opsResp
+}
+
+export function createTestAllOperationsResponse(brokerId: string, numSteps: number, operationId: string, status: string): AllOperationResponse {
+  const opsResp: AllOperationResponse = {
+    data: [createTestOperationData(brokerId, numSteps, operationId, status)]
+  }
+  return opsResp
+}
+
+export function createTestOperationData(brokerId: string, numSteps: number, operationId: string, status: string): OperationData {
+  return {
       completedTime: '2025-08-02T16:29:34Z',
       createdBy: '67tr8tku4l',
       createdTime: '2025-08-02T16:26:40Z',
@@ -47,15 +60,13 @@ export function createTestOperationResponse(brokerId: string, numSteps: number, 
       progressLogs: createTestProgressLogs(numSteps, status),
       resourceId: brokerId,
       resourceType: 'service',
-      status: status,
+      status,
       type: "operation"
     }
   }
-  return opsResp
-}
 
 export function createTestProgressLogs(numSteps: number, status: string): ProgressLog[] {
-  let progressLogs: ProgressLog[] = []
+  const progressLogs: ProgressLog[] = []
   for (let i = 0; i < numSteps; i++) {
     const progressLog: ProgressLog = {
       message: 'This is a decription for the step',
@@ -66,5 +77,21 @@ export function createTestProgressLogs(numSteps: number, status: string): Progre
     }
     progressLogs.push(progressLog)
   }
+  
   return progressLogs
+}
+
+export function createProgressLogsWithStatus(completedSteps: number, totalSteps: number): ProgressLog[] {
+  const logs: ProgressLog[] = []
+  for (let i = 0; i < totalSteps; i++) {
+    logs.push({
+      message: `This is step ${i + 1}`,
+      status: i < completedSteps ? 'completed' : 'in-progress',
+      step: i < completedSteps ? 'success' : 'in-progress',
+      stepId: `${i}`,
+      timestamp: '2025-08-02T16:26:41.272Z',
+    })
+  }
+
+  return logs
 }

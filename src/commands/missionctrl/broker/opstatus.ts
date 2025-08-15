@@ -1,19 +1,20 @@
 import { Flags } from '@oclif/core'
-import cliProgress from 'cli-progress'
+import { MultiBar, Presets, SingleBar } from 'cli-progress'
 
 import { ScCommand } from '../../../sc-command.js'
-import { EventBrokerListApiResponse, OperationData, OperationResponse } from '../../../types/broker.js'
+import { AllOperationResponse, EventBrokerListApiResponse, OperationData, OperationResponse } from '../../../types/broker.js'
+import { renderTable, sleep } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
-import { camelCaseToTitleCase, renderKeyValueTable, sleep } from '../../../util/internal.js'
 
 export default class MissionctrlBrokerOpstatus extends ScCommand<typeof MissionctrlBrokerOpstatus> {
   static override args = {}
-  static override description = `Get the status of an operation that being performed on an event broker service. 
-  To get the operation, you provide identifier of the operation and the identifier of the event broker service.
+  static override description = `Get the status of all operations being performed on an event broker service. 
+  To get the operation status, you must provide the identifier or name of the event broker service.
 
   Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or services:view:self ]`
   static override examples = [
-    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> -b <broker-id>',
+    '<%= config.bin %> <%= command.id %> -n <broker-name>',
   ]
   static override flags = {
     'broker-id': Flags.string({
@@ -26,32 +27,27 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       description: 'Name of the event broker service.',
       exactlyOne: ['broker-id', 'name'],
     }),
-    'operation-id': Flags.string({
-      char: 'o',
-      description: 'The identifier of the operation being performed on the event broker service.'
-    }),
     'show-progress': Flags.boolean({
       char: 'p',
-      description: 'Displays a status bar of the in-progress operation. The command will wait for completion of each step of the operation.'
+      description: 'Displays a status bar of the in-progress operations. The command will wait for completion of each step of the operation.'
     }),
     'wait-ms': Flags.integer({
       char: 'w',
-      description: 'The milliseconds to wait between API call in when showing progress. Default is 5000 ms.'
+      description: 'The milliseconds to wait between API calls for checking progress of the operation. Default is 5000 ms.'
     }),
   }
 
-  public async run(): Promise<OperationData> {
+  public async run(): Promise<OperationData[]> {
     const { flags } = await this.parse(MissionctrlBrokerOpstatus)
 
     const name = flags.name ?? ''
     let brokerId = flags['broker-id'] ?? ''
-    const operationId = flags['operation-id'] ?? ''
     const showProgress = flags['show-progress'] ?? false
     const waitMs = flags['wait-ms'] ?? 5000
 
     const conn = new ScConnection()
 
-    // API url
+    // Base API url
     let apiUrl: string = `/missionControl/eventBrokerServices`
 
     // If broker name provided, retrieve the broker service id first
@@ -60,7 +56,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       // API call to get broker by name
       apiUrl += `?customAttributes=name=="${name}"`
       const resp = await conn.get<EventBrokerListApiResponse>(apiUrl)
-      // TODO FUTURE: show status of multiple brokers operations that match the name 
+      // FUTURE: show status of multiple brokers operations that match the name 
       if (resp.data.length > 1) {
         this.error(`Multiple broker services found with: ${name}. Exactly one broker service must match the provided name.`)
       } else {
@@ -69,59 +65,107 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     }
 
     // API call to retrieve status of the broker operation
-    apiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations/${operationId}`
-    if (showProgress) {
-      apiUrl += '?expand=progressLogs'
-    }
-    let resp = await conn.get<OperationResponse>(apiUrl)
-    this.print(resp.data)
+    apiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations`
+    
+    const resp = await conn.get<AllOperationResponse>(apiUrl)
+    const opStatusArray = [
+      ['Operation Id', 'Operation Type', 'Status', 'Created Time', 'Completed Time'],
+      ...resp.data.map((item: OperationData) => [
+        item.id,
+        item.operationType,
+        item.status,
+        item.createdTime,
+        item.completedTime,
+      ]),
+    ]
 
-    // Display progress bar for each step included in the progress logs
-    // Enable progress bar if set
-    if (showProgress && resp.data.progressLogs && resp.data.progressLogs.length > 0) {
-      let progressLogs = resp.data.progressLogs
-      let numSteps = progressLogs.length
+    // Display results as a table
+    this.log(renderTable(opStatusArray))
 
-      // Create a new progress bar instance and use shades_classic theme
-      const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-
-      // start the progress bar with a total value of size of the steps and start value of 0
-      progressBar.start(numSteps, 0);
-
-      // Update the progress with the steps completed
-      let completedNumSteps = 0
-      while (completedNumSteps < numSteps) {
-        // Wait before making the next API call
-        await sleep(waitMs)
-        // Make another API call to get the lastest progress
-        resp = await conn.get<OperationResponse>(apiUrl)
-        if (resp.data.progressLogs) {
-          progressLogs = resp.data.progressLogs
-          for (const progressLog of progressLogs) {
-            if (progressLog.step === 'success') {
-              completedNumSteps++
-            }
-          }
-          // Update progress bar
+    // If show-progress flag is set, display progress bars for each operation
+    if(showProgress && resp.data.length > 0) {
+      // Create progress bar for each operation
+      const multiProgressBar = new MultiBar({
+        clearOnComplete: false,
+        format: ' {bar} | {operationType} | {value}/{total}',
+        hideCursor: true,
+      }, Presets.shades_classic)
+      
+      // Get the initial progress for each operation
+      const progressBars: [string, SingleBar][] = []
+      let completedOperations = 0
+      let allCompleted = false
+      for (const operationData of resp.data) {
+        const opStatusApiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations/${operationData.id}?expand=progressLogs`
+        // eslint-disable-next-line no-await-in-loop
+        const opStatusResp = await conn.get<OperationResponse>(opStatusApiUrl)
+        this.debug(`Operation ID: ${operationData.id}, Type: ${operationData.operationType}, Status: ${operationData.status}`)
+        if (opStatusResp.data.progressLogs) {
+          const numSteps = opStatusResp.data.progressLogs.length
+          // start a new progress bar for the operation with a total value of size of the steps
+          const progressBar = multiProgressBar.create(numSteps, 0, { operationType: operationData.operationType })
+          // Update the progress with the steps completed
+          const completedNumSteps = opStatusResp.data.progressLogs.filter(log => log.status === 'success').length
           progressBar.update(completedNumSteps)
-        } else {
-          break
+          if (completedNumSteps === numSteps || opStatusResp.data.status === 'SUCCEEDED' || opStatusResp.data.status === 'FAILED') {
+            completedOperations += 1
+            progressBar.stop()
+          }
+          
+          // Add the operation ID and progress bar to the list
+          progressBars.push([operationData.id, progressBar])
         }
       }
 
-      // stop the progress bar
-      progressBar.stop()
+      // Check if all operations are completed
+      if(completedOperations === progressBars.length) {
+        allCompleted = true
+      }
+
+      // Loop until all operations are completed
+      while (!allCompleted) {
+        // Wait before making the next API call
+        sleep(waitMs)
+        // Poll the status of all operations and update the progress bars
+        // eslint-disable-next-line no-await-in-loop
+        allCompleted = await this.pollAllOperationStatus(conn, brokerId, progressBars)
+      }
+      
+      multiProgressBar.stop()
+      this.log() // Add a new line for better readability
     }
 
     return resp.data
   }
 
-  private print(environment: OperationData): void {
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(environment).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-    this.log()
-    this.log(renderKeyValueTable(tableRows))
+  private async pollAllOperationStatus(conn: ScConnection, brokerId: string, progressBars: [string, SingleBar][]): Promise<boolean> {
+    let completedOperations = 0
+    let allCompleted = false
+    // For each operation, get the latest status and update the progress bar
+    for (const [operationId, progressBar] of progressBars) {
+      const opStatusApiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations/${operationId}?expand=progressLogs`
+      // eslint-disable-next-line no-await-in-loop
+      const opStatusResp = await conn.get<OperationResponse>(opStatusApiUrl)
+      if (opStatusResp.data.progressLogs) {
+        const numSteps = opStatusResp.data.progressLogs.length
+        const completedNumSteps = opStatusResp.data.progressLogs.filter(log => log.status === 'success').length
+        // Update progress bar
+        progressBar.setTotal(numSteps)
+        progressBar.update(completedNumSteps)
+        if (completedNumSteps === numSteps || opStatusResp.data.status === 'SUCCEEDED' || opStatusResp.data.status === 'FAILED') {
+          completedOperations += 1
+          progressBar.stop()
+        }
+      } else {
+        progressBar.stop()
+      }
+    }
+
+    // Check if all operations are completed
+    if(completedOperations === progressBars.length) {
+      allCompleted = true
+    }
+
+    return allCompleted
   }
 }

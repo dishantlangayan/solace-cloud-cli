@@ -50,6 +50,7 @@ The following Environment variables are optional:
 * [`sc missionctrl broker delete`](#sc-missionctrl-broker-delete)
 * [`sc missionctrl broker display`](#sc-missionctrl-broker-display)
 * [`sc missionctrl broker list`](#sc-missionctrl-broker-list)
+* [`sc missionctrl broker opstatus`](#sc-missionctrl-broker-opstatus)
 * [`sc platform env create`](#sc-platform-env-create)
 * [`sc platform env delete`](#sc-platform-env-delete)
 * [`sc platform env display`](#sc-platform-env-display)
@@ -92,8 +93,8 @@ Create an event broker service. You must provide a unique name and select a serv
 
 ```
 USAGE
-  $ sc missionctrl broker create -d <value> -n <value> -c <value> [-e <value>] [-l] [-s <value>] [-m <value>] [-r] [-v
-  <value>]
+  $ sc missionctrl broker create -d <value> -n <value> -c <value> [--json] [--log-level debug|warn|error|info|trace] [-e
+    <value>] [-l] [-s <value>] [-m <value>] [-r] [-v <value>]
 
 FLAGS
   -c, --service-class-id=<value>
@@ -126,6 +127,11 @@ FLAGS
   -v, --version=<value>
       The event broker version. A default version is provided when this is not specified.
 
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
 DESCRIPTION
   Create an event broker service. You must provide a unique name and select a service class and datacenter. You can
   optionally define other properties for the event broker service.
@@ -146,11 +152,16 @@ Delete a service using its unique identifier.
 
 ```
 USAGE
-  $ sc missionctrl broker delete [-b <value>] [-n <value>]
+  $ sc missionctrl broker delete [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Delete a service using its unique identifier.
@@ -173,11 +184,16 @@ Get the details of an event broker service using its identifier or name.
 
 ```
 USAGE
-  $ sc missionctrl broker display [-b <value>] [-n <value>]
+  $ sc missionctrl broker display [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>]
 
 FLAGS
   -b, --broker-id=<value>  Id of the event broker service.
   -n, --name=<value>       Name of the event broker service.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
 
 DESCRIPTION
   Get the details of an event broker service using its identifier or name.
@@ -199,7 +215,8 @@ Get a listing of event broker services.
 
 ```
 USAGE
-  $ sc missionctrl broker list [-n <value>] [--pageNumber <value>] [--pageSize <value>] [--sort <value>]
+  $ sc missionctrl broker list [--json] [--log-level debug|warn|error|info|trace] [-n <value>] [--pageNumber <value>]
+    [--pageSize <value>] [--sort <value>]
 
 FLAGS
   -n, --name=<value>
@@ -219,6 +236,11 @@ FLAGS
       * attributes-names
       * attributes-names:sort-order
 
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
 DESCRIPTION
   Get a listing of event broker services.
 
@@ -232,6 +254,43 @@ EXAMPLES
 ```
 
 _See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.2/src/commands/missionctrl/broker/list.ts)_
+
+## `sc missionctrl broker opstatus`
+
+Get the status of all operations being performed on an event broker service. 
+
+```
+USAGE
+  $ sc missionctrl broker opstatus [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-p] [-w
+  <value>]
+
+FLAGS
+  -b, --broker-id=<value>  Id of the event broker service.
+  -n, --name=<value>       Name of the event broker service.
+  -p, --show-progress      Displays a status bar of the in-progress operations. The command will wait for completion of
+                           each step of the operation.
+  -w, --wait-ms=<value>    The milliseconds to wait between API calls for checking progress of the operation. Default is
+                           5000 ms.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Get the status of all operations being performed on an event broker service.
+  To get the operation status, you must provide the identifier or name of the event broker service.
+
+  Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
+  services:view:self ]
+
+EXAMPLES
+  $ sc missionctrl broker opstatus -b <broker-id>
+
+  $ sc missionctrl broker opstatus -n <broker-name>
+```
+
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.2/src/commands/missionctrl/broker/opstatus.ts)_
 
 ## `sc platform env create`
 
