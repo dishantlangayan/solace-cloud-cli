@@ -41,6 +41,12 @@ export class ScConnection {
         return response.data
     }
 
+    // PATCH request
+    async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+        const response: AxiosResponse<T> = await this.axiosInstance.patch(url, data, config)
+        return response.data
+    }
+
     // POST request
     async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
         const response: AxiosResponse<T> = await this.axiosInstance.post(url, data, config)

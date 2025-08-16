@@ -73,7 +73,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
       }
     }
 
-    // API call to delete environment by id
+    // API call to update environment by id
     apiUrl += `/${envIdToUdpate}`
     const resp = await conn.put<EnvironmentDetail>(apiUrl, body)
     this.log(`Environment with id '${envIdToUdpate}' has been updated successfully.`)

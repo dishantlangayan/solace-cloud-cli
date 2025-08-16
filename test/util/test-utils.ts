@@ -21,7 +21,7 @@ export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   }
 }
 
-export function aBroker(brokerId: string, brokerName: string,) {
+export function aBroker(brokerId: string, brokerName: string) {
   return {
     completedTime: '',
     createdBy: 'test',
