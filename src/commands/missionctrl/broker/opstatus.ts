@@ -57,7 +57,9 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       apiUrl += `?customAttributes=name=="${name}"`
       const resp = await conn.get<EventBrokerListApiResponse>(apiUrl)
       // FUTURE: show status of multiple brokers operations that match the name 
-      if (resp.data.length > 1) {
+      if (resp.data.length === 0) {
+        this.error(`No brokers found with name: ${name}.`)
+      } else if (resp.data.length > 1) {
         this.error(`Multiple broker services found with: ${name}. Exactly one broker service must match the provided name.`)
       } else {
         brokerId = resp.data[0]?.id
