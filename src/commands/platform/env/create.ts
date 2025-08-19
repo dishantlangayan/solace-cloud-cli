@@ -12,7 +12,7 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
   Token Permissions: [ environments:edit ]`
   static override examples = ['<%= config.bin %> <%= command.id %> --name=MyEnvironment --desc="My environment description" --isDefault --isProduction']
   static override flags = {
-    desc: Flags.string({
+    description: Flags.string({
       char: 'd',
       description: 'Description of the environment to create.'
     }),
@@ -36,7 +36,7 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
     const { flags } = await this.parse(PlatformEnvCreate)
 
     const name = flags.name ?? ''
-    const desc = flags.desc ?? ''
+    const desc = flags.description ?? ''
     const isDefault = flags.isDefault ?? false
     const isProduction = flags.isProduction ?? false
 
@@ -46,7 +46,7 @@ export default class PlatformEnvCreate extends ScCommand<typeof PlatformEnvCreat
     const apiUrl: string = `/platform/environments`
     // API body
     const body = {
-      description: desc,
+      ...(desc && { description: desc }),
       isDefault,
       isProduction,
       name,
