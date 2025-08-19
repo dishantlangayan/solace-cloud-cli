@@ -18,7 +18,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
     '<%= config.bin %> <%= command.id %> --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault'
   ]
   static override flags = {
-    desc: Flags.string({
+    description: Flags.string({
       char: 'd',
       description: 'Description of the environment to update.'
     }),
@@ -42,7 +42,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
   public async run(): Promise<Environment> {
     const { flags } = await this.parse(PlatformEnvUpdate)
 
-    const desc = flags.desc ?? ''
+    const desc = flags.description ?? ''
     const envId = flags['env-id'] ?? ''
     const name = flags.name ?? ''
     const newName = flags['new-name'] ?? ''
@@ -58,7 +58,7 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
 
     // API url
     let apiUrl: string = `/platform/environments`
-    let envIdToUdpate: string | undefined = envId
+    let envIdToUpdate: string | undefined = envId
 
     // If env name provided, get the environment matching provided name and delete. If more than one environment matches, an error will be thrown.
     // If env id provided, delete environment with that id
@@ -69,14 +69,14 @@ export default class PlatformEnvUpdate extends ScCommand<typeof PlatformEnvUpdat
       if (resp.data.length > 1) {
         this.error(`Multiple environments found with: ${name}. Exactly one environment must match the provided name.`)
       } else {
-        envIdToUdpate = resp.data[0]?.id
+        envIdToUpdate = resp.data[0]?.id
       }
     }
 
     // API call to update environment by id
-    apiUrl += `/${envIdToUdpate}`
+    apiUrl += `/${envIdToUpdate}`
     const resp = await conn.put<EnvironmentDetail>(apiUrl, body)
-    this.log(`Environment with id '${envIdToUdpate}' has been updated successfully.`)
+    this.log(`Environment with id '${envIdToUpdate}' has been updated successfully.`)
     this.print(resp.data)
     return resp.data
   }
