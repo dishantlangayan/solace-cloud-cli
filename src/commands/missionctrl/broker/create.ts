@@ -1,9 +1,9 @@
-import { Flags } from '@oclif/core'
+import {Flags} from '@oclif/core'
 
-import { ScCommand } from '../../../sc-command.js'
-import { EventBrokerCreateApiResponse, EventBrokerCreateDetail } from '../../../types/broker.js'
-import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
-import { ScConnection } from '../../../util/sc-connection.js'
+import {ScCommand} from '../../../sc-command.js'
+import {EventBrokerCreateApiResponse, EventBrokerCreateDetail} from '../../../types/broker.js'
+import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerCreate extends ScCommand<typeof MissionctrlBrokerCreate> {
   static override args = {}
@@ -12,7 +12,9 @@ export default class MissionctrlBrokerCreate extends ScCommand<typeof Missionctr
 Your token must have one of the permissions listed in the Token Permissions.
 
 Token Permissions: [ \`services:post\` ]`
-  static override examples = ['<%= config.bin %> <%= command.id %> --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER']
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER',
+  ]
   static override flags = {
     'datacenter-id': Flags.string({
       char: 'd',
@@ -21,8 +23,7 @@ Token Permissions: [ \`services:post\` ]`
     }),
     'env-name': Flags.string({
       char: 'e',
-      description:
-        `The name of the environment environment where you want to create the service. 
+      description: `The name of the environment environment where you want to create the service. 
         You can only specify an environment identifier when creating services in a Public Region. 
         You cannot specify an environment identifier when creating a service in a Dedicated Region. 
         If no name is provided, the service will be created in the default environment.`,
@@ -45,7 +46,7 @@ Token Permissions: [ \`services:post\` ]`
     name: Flags.string({
       char: 'n',
       description: 'Name of the event broker service to create.',
-      required: true
+      required: true,
     }),
     'redundancy-group-ssl-enabled': Flags.boolean({
       char: 'r',
@@ -65,7 +66,7 @@ Token Permissions: [ \`services:post\` ]`
   }
 
   public async run(): Promise<EventBrokerCreateDetail> {
-    const { flags } = await this.parse(MissionctrlBrokerCreate)
+    const {flags} = await this.parse(MissionctrlBrokerCreate)
 
     const datacenterId = flags['datacenter-id'] ?? ''
     const envName = flags['env-name'] ?? ''
@@ -86,7 +87,7 @@ Token Permissions: [ \`services:post\` ]`
     // If envName is provided, retrieve the environment ID
     if (envName) {
       const envApiUrl = `/platform/environments?name=${envName}`
-      const envResp = await conn.get<{ data: { id: string }[] }>(envApiUrl)
+      const envResp = await conn.get<{data: {id: string}[]}>(envApiUrl)
       if (envResp.data.length > 1) {
         this.error(`Multiple environments found with: ${name}. Exactly one environment must match the provided name.`)
       } else {
@@ -96,12 +97,12 @@ Token Permissions: [ \`services:post\` ]`
 
     // API body
     const body = {
-      ...(datacenterId && { datacenterId }),
-      ...(envId) && { environmentId: envId },
-      ...(eventBrokerVersion && { eventBrokerVersion }),
+      ...(datacenterId && {datacenterId}),
+      ...(envId && {environmentId: envId}),
+      ...(eventBrokerVersion && {eventBrokerVersion}),
       locked,
-      ...(maxSpoolUsage && { maxSpoolUsage }),
-      ...(msgVpnName && { msgVpnName }),
+      ...(maxSpoolUsage && {maxSpoolUsage}),
+      ...(msgVpnName && {msgVpnName}),
       name,
       redundancyGroupSslEnabled,
       serviceClassId,
