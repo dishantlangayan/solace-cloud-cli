@@ -22,7 +22,7 @@ $ npm install -g @dishantlangayan/solace-cloud-cli
 $ sc COMMAND
 running command...
 $ sc (--version)
-@dishantlangayan/solace-cloud-cli/0.0.3 darwin-x64 node-v23.10.0
+@dishantlangayan/solace-cloud-cli/0.0.4 darwin-arm64 node-v24.1.0
 $ sc --help [COMMAND]
 USAGE
   $ sc COMMAND
@@ -51,6 +51,7 @@ The following Environment variables are optional:
 * [`sc missionctrl broker display`](#sc-missionctrl-broker-display)
 * [`sc missionctrl broker list`](#sc-missionctrl-broker-list)
 * [`sc missionctrl broker opstatus`](#sc-missionctrl-broker-opstatus)
+* [`sc missionctrl broker update`](#sc-missionctrl-broker-update)
 * [`sc platform env create`](#sc-platform-env-create)
 * [`sc platform env delete`](#sc-platform-env-delete)
 * [`sc platform env display`](#sc-platform-env-display)
@@ -144,7 +145,7 @@ EXAMPLES
   $ sc missionctrl broker create --name=MyBrokerName --datacenter-id=eks-ca-central-1a --service-class-id=DEVELOPER
 ```
 
-_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/missionctrl/broker/create.ts)_
+_See code: [src/commands/missionctrl/broker/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/create.ts)_
 
 ## `sc missionctrl broker delete`
 
@@ -176,7 +177,7 @@ EXAMPLES
   $ sc missionctrl broker delete --name=MyBrokerName
 ```
 
-_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/missionctrl/broker/delete.ts)_
+_See code: [src/commands/missionctrl/broker/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/delete.ts)_
 
 ## `sc missionctrl broker display`
 
@@ -207,7 +208,7 @@ EXAMPLES
   $ sc missionctrl broker display
 ```
 
-_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/missionctrl/broker/display.ts)_
+_See code: [src/commands/missionctrl/broker/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/display.ts)_
 
 ## `sc missionctrl broker list`
 
@@ -253,23 +254,24 @@ EXAMPLES
   $ sc missionctrl broker list --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc
 ```
 
-_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/missionctrl/broker/list.ts)_
+_See code: [src/commands/missionctrl/broker/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/list.ts)_
 
 ## `sc missionctrl broker opstatus`
 
-Get the status of an operation that being performed on an event broker service. 
+Get the status of all operations being performed on an event broker service. 
 
 ```
 USAGE
-  $ sc missionctrl broker opstatus [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-o
-  <value>] [-p]
+  $ sc missionctrl broker opstatus [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-n <value>] [-p] [-w
+  <value>]
 
 FLAGS
-  -b, --broker-id=<value>     Id of the event broker service.
-  -n, --name=<value>          Name of the event broker service.
-  -o, --operation-id=<value>  The identifier of the operation being performed on the event broker service.
-  -p, --show-progress         Displays a status bar of the in-progress operation. The command will wait for completion
-                              of each step of the operation.
+  -b, --broker-id=<value>  Id of the event broker service.
+  -n, --name=<value>       Name of the event broker service.
+  -p, --show-progress      Displays a status bar of the in-progress operations. The command will wait for completion of
+                           each step of the operation.
+  -w, --wait-ms=<value>    The milliseconds to wait between API calls for checking progress of the operation. Default is
+                           5000 ms.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -277,17 +279,55 @@ GLOBAL FLAGS
                         <options: debug|warn|error|info|trace>
 
 DESCRIPTION
-  Get the status of an operation that being performed on an event broker service.
-  To get the operation, you provide identifier of the operation and the identifier of the event broker service.
+  Get the status of all operations being performed on an event broker service.
+  To get the operation status, you must provide the identifier or name of the event broker service.
 
   Token Permissions: [ mission_control:access or services:get or services:get:self or services:view or
   services:view:self ]
 
 EXAMPLES
-  $ sc missionctrl broker opstatus
+  $ sc missionctrl broker opstatus -b <broker-id>
+
+  $ sc missionctrl broker opstatus -n <broker-name>
 ```
 
-_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/missionctrl/broker/opstatus.ts)_
+_See code: [src/commands/missionctrl/broker/opstatus.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/opstatus.ts)_
+
+## `sc missionctrl broker update`
+
+Update the configuration of an existing event broker service. 
+
+```
+USAGE
+  $ sc missionctrl broker update [--json] [--log-level debug|warn|error|info|trace] [-b <value>] [-l <value>] [-n <value>]
+    [--new-name <value>]
+
+FLAGS
+  -b, --broker-id=<value>  Id of the event broker service.
+  -l, --locked=<value>     Indicates whether the event broker service has deletion protection enabled. The valid values
+                           are 'true' (enabled) or 'false' (disabled).
+  -n, --name=<value>       Name of the event broker service.
+      --new-name=<value>   New name of the event broker service. The new service name must be unique within an
+                           organization.
+
+GLOBAL FLAGS
+  --json                Format output as json.
+  --log-level=<option>  [default: info] Specify level for logging.
+                        <options: debug|warn|error|info|trace>
+
+DESCRIPTION
+  Update the configuration of an existing event broker service.
+  You can provide any combination of supported flags. If a flag is not provided, then it will not be updated.
+
+  Your token must have one of the permissions listed in the Token Permissions.
+
+  Token Permissions: [ mission_control:access or services:put ]
+
+EXAMPLES
+  $ sc missionctrl broker update
+```
+
+_See code: [src/commands/missionctrl/broker/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/missionctrl/broker/update.ts)_
 
 ## `sc platform env create`
 
@@ -299,13 +339,13 @@ USAGE
     [--isProduction]
 
 FLAGS
-  -d, --desc=<value>  Description of the environment to create.
-  -n, --name=<value>  (required) Name of the environment to create.
-      --isDefault     Indicates this is the organization’s default environment.
-      --isProduction  Indicates this is an organization’s production environment.
-                      This is an immutable field. If an environment needs to be migrated,
-                      architecture can be migrated to a new environment with the desired
-                      environment type instead.
+  -d, --description=<value>  Description of the environment to create.
+  -n, --name=<value>         (required) Name of the environment to create.
+      --isDefault            Indicates this is the organization’s default environment.
+      --isProduction         Indicates this is an organization’s production environment.
+                             This is an immutable field. If an environment needs to be migrated,
+                             architecture can be migrated to a new environment with the desired
+                             environment type instead.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -321,7 +361,7 @@ EXAMPLES
   $ sc platform env create --name=MyEnvironment --desc="My environment description" --isDefault --isProduction
 ```
 
-_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/platform/env/create.ts)_
+_See code: [src/commands/platform/env/create.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/platform/env/create.ts)_
 
 ## `sc platform env delete`
 
@@ -351,7 +391,7 @@ EXAMPLES
   $ sc platform env delete --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/platform/env/delete.ts)_
+_See code: [src/commands/platform/env/delete.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/platform/env/delete.ts)_
 
 ## `sc platform env display`
 
@@ -383,7 +423,7 @@ EXAMPLES
   $ sc platform env display --env-id=MyEnvId
 ```
 
-_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/platform/env/display.ts)_
+_See code: [src/commands/platform/env/display.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/platform/env/display.ts)_
 
 ## `sc platform env list`
 
@@ -416,7 +456,7 @@ EXAMPLES
   $ sc platform env list --name=Default --pageNumber=1 --pageSize=10 --sort=name:ASC
 ```
 
-_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/platform/env/list.ts)_
+_See code: [src/commands/platform/env/list.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/platform/env/list.ts)_
 
 ## `sc platform env update`
 
@@ -428,11 +468,11 @@ USAGE
     <value>] [--new-name <value>]
 
 FLAGS
-  -d, --desc=<value>      Description of the environment to update.
-  -e, --env-id=<value>    Id of the environment.
-  -n, --name=<value>      Current name of the environment.
-      --isDefault         Indicates this is the organization's default environment. The default value is false.
-      --new-name=<value>  New name of the environment.
+  -d, --description=<value>  Description of the environment to update.
+  -e, --env-id=<value>       Id of the environment.
+  -n, --name=<value>         Current name of the environment.
+      --isDefault            Indicates this is the organization's default environment. The default value is false.
+      --new-name=<value>     New name of the environment.
 
 GLOBAL FLAGS
   --json                Format output as json.
@@ -453,7 +493,7 @@ EXAMPLES
   $ sc platform env update --env-id=MyEnvId --new-name=MyNewEnvName --desc="My description to update" --isDefault
 ```
 
-_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.3/src/commands/platform/env/update.ts)_
+_See code: [src/commands/platform/env/update.ts](https://github.com/dishantlangayan/solace-cloud-cli/blob/v0.0.4/src/commands/platform/env/update.ts)_
 
 ## `sc plugins`
 
