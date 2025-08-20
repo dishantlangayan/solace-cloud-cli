@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 
 import {ScCommand} from '../../../sc-command.js'
-import {EventBrokerCreateApiResponse, EventBrokerCreateDetail} from '../../../types/broker.js'
+import {EventBrokerOperationApiResponse, EventBrokerOperationDetail} from '../../../types/broker.js'
 import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
 import {ScConnection} from '../../../util/sc-connection.js'
 
@@ -65,7 +65,7 @@ Token Permissions: [ \`services:post\` ]`
     }),
   }
 
-  public async run(): Promise<EventBrokerCreateDetail> {
+  public async run(): Promise<EventBrokerOperationDetail> {
     const {flags} = await this.parse(MissionctrlBrokerCreate)
 
     const datacenterId = flags['datacenter-id'] ?? ''
@@ -109,14 +109,14 @@ Token Permissions: [ \`services:post\` ]`
     }
 
     // API call
-    const resp = await conn.post<EventBrokerCreateApiResponse>(apiUrl, body)
+    const resp = await conn.post<EventBrokerOperationApiResponse>(apiUrl, body)
     // Display results
     this.log('Event broker service created successfully.')
     this.print(resp.data)
     return resp.data
   }
 
-  private print(broker: EventBrokerCreateDetail): void {
+  private print(broker: EventBrokerOperationDetail): void {
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),

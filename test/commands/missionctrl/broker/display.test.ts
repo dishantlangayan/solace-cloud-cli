@@ -1,10 +1,11 @@
-import { runCommand } from '@oclif/test'
-import { expect } from 'chai'
+import {runCommand} from '@oclif/test'
+import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import { camelCaseToTitleCase, renderKeyValueTable } from '../../../../src/util/internal.js'
-import { ScConnection } from '../../../../src/util/sc-connection.js'
-import { aBroker, setEnvVariables } from '../../../util/test-utils.js'
+import {EventBrokerApiResponse} from '../../../../src/types/broker.js'
+import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal.js'
+import {ScConnection} from '../../../../src/util/sc-connection.js'
+import {aBroker, setEnvVariables} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:display', () => {
   setEnvVariables()
@@ -21,26 +22,24 @@ describe('missionctrl:broker:display', () => {
   })
 
   it('runs missionctrl:broker:display cmd', async () => {
-    const { stdout } = await runCommand('missionctrl:broker:display')
+    const {stdout} = await runCommand('missionctrl:broker:display')
     expect(stdout).to.contain('')
   })
 
   it(`runs missionctrl:broker:display -b ${brokerId}`, async () => {
     // Arrange
-    const broker = {
-      data: [aBroker(brokerId, brokerName)],
-      meta: {
-        additionalProp: {}
-      }
+    const expectBroker: EventBrokerApiResponse = {
+      data: aBroker(brokerId, brokerName),
+      meta: {},
     }
-    scConnStub.returns(Promise.resolve(broker))
+    scConnStub.returns(Promise.resolve(expectBroker))
 
     const tableRows = [
       ['Key', 'Value'],
-      ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
+      ...Object.entries(expectBroker.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
     ]
 
-    const { stdout } = await runCommand(`missionctrl:broker:display -b ${brokerId}`)
+    const {stdout} = await runCommand(`missionctrl:broker:display -b ${brokerId}`)
     expect(stdout).to.contain(renderKeyValueTable(tableRows))
   })
 })

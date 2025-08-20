@@ -1,4 +1,10 @@
-import { AllOperationResponse, OperationData, OperationResponse, ProgressLog } from "../../src/types/broker"
+import {
+  EventBrokerAllOperationsApiResponse,
+  EventBrokerOperationApiResponse,
+  EventBrokerOperationDetail,
+  EventBrokerServiceDetail,
+  ProgressLog,
+} from '../../src/types/broker'
 
 export function setEnvVariables(): void {
   process.env.SC_ACCESS_TOKEN = 'TEST'
@@ -21,55 +27,74 @@ export function anEnv(name: string, isDefault: boolean, isProd: boolean) {
   }
 }
 
-export function aBroker(brokerId: string, brokerName: string) {
+export function aBroker(brokerId: string, brokerName: string): EventBrokerServiceDetail {
   return {
-    completedTime: '',
-    createdBy: 'test',
-    createdTime: '2024-09-05T19:54:42.766',
+    adminState: 'START',
+    createdTime: '2025-08-20T18:15:47Z',
+    creationState: 'COMPLETED',
+    datacenterId: 'eks-ca-central-1a',
+    environmentId: 'some-env-id',
+    eventBrokerServiceVersion: '10.25.0.61-7',
     id: brokerId,
+    infrastructureId: 'some-infrastructure-id',
+    locked: false,
+    msgVpnName: `msgvpn-${brokerId}`,
     name: brokerName,
-    operationType: '',
-    resourceId: '',
-    resourceType: '',
-    status: '',
-    type: '',
+    ownedBy: 'some-user',
+    serviceClassId: 'DEVELOPER',
+    type: 'service',
   }
 }
 
-export function createTestOperationResponse(brokerId: string, numSteps: number, operationId: string, status: string): OperationResponse {
-  const opsResp: OperationResponse = {
-    data: createTestOperationData(brokerId, numSteps, operationId, status)
-  }
-  return opsResp
-}
-
-export function createTestAllOperationsResponse(brokerId: string, numSteps: number, operationId: string, status: string): AllOperationResponse {
-  const opsResp: AllOperationResponse = {
-    data: [createTestOperationData(brokerId, numSteps, operationId, status)]
+export function createTestOperationResponse(
+  brokerId: string,
+  numSteps: number,
+  operationId: string,
+  status: string,
+): EventBrokerOperationApiResponse {
+  const opsResp: EventBrokerOperationApiResponse = {
+    data: createTestOperationData(brokerId, numSteps, operationId, status),
   }
   return opsResp
 }
 
-export function createTestOperationData(brokerId: string, numSteps: number, operationId: string, status: string): OperationData {
+export function createTestAllOperationsResponse(
+  brokerId: string,
+  numSteps: number,
+  operationId: string,
+  status: string,
+): EventBrokerAllOperationsApiResponse {
+  const opsResp: EventBrokerAllOperationsApiResponse = {
+    data: [createTestOperationData(brokerId, numSteps, operationId, status)],
+  }
+  return opsResp
+}
+
+export function createTestOperationData(
+  brokerId: string,
+  numSteps: number,
+  operationId: string,
+  status: string,
+): EventBrokerOperationDetail {
   return {
-      completedTime: '2025-08-02T16:29:34Z',
-      createdBy: '67tr8tku4l',
-      createdTime: '2025-08-02T16:26:40Z',
-      id: operationId,
-      operationType: 'createService',
-      progressLogs: createTestProgressLogs(numSteps, status),
-      resourceId: brokerId,
-      resourceType: 'service',
-      status,
-      type: "operation"
-    }
+    completedTime: '2025-08-02T16:29:34Z',
+    createdBy: '67tr8tku4l',
+    createdTime: '2025-08-02T16:26:40Z',
+    id: operationId,
+    operationType: 'createService',
+    progressLogs: createTestProgressLogs(numSteps, status),
+    resourceId: brokerId,
+    resourceType: 'service',
+    status,
+    type: 'operation',
   }
+}
 
 export function createTestProgressLogs(numSteps: number, status: string): ProgressLog[] {
   const progressLogs: ProgressLog[] = []
   for (let i = 0; i < numSteps; i++) {
     const progressLog: ProgressLog = {
-      message: 'This is a decription for the step',
+      message: 'This is a description for the step',
       status,
       step: `This is step number ${i}`,
       stepId: `${i}`,
@@ -77,7 +102,7 @@ export function createTestProgressLogs(numSteps: number, status: string): Progre
     }
     progressLogs.push(progressLog)
   }
-  
+
   return progressLogs
 }
 

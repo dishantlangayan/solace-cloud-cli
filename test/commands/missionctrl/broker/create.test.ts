@@ -2,7 +2,7 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {EventBrokerCreateApiResponse, EventBrokerCreateDetail} from '../../../../src/types/broker.js'
+import {EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
 import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal.js'
 import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, anEnv, setEnvVariables} from '../../../util/test-utils'
@@ -40,9 +40,8 @@ describe('missionctrl:broker:create', () => {
       redundancyGroupSslEnabled: false,
       serviceClassId: brokerSvcClassId,
     }
-    const expectBroker: EventBrokerCreateDetail = aBroker(brokerName, brokerDC)
-    const expectResponse: EventBrokerCreateApiResponse = {
-      data: expectBroker,
+    const expectResponse: EventBrokerOperationApiResponse = {
+      data: aBroker(brokerName, brokerDC),
       meta: {},
     }
 
@@ -75,9 +74,8 @@ describe('missionctrl:broker:create', () => {
       redundancyGroupSslEnabled: true,
       serviceClassId: brokerSvcClassId,
     }
-    const expectBroker: EventBrokerCreateDetail = aBroker(brokerName, brokerDC)
-    const expectResponse: EventBrokerCreateApiResponse = {
-      data: expectBroker,
+    const expectResponse: EventBrokerOperationApiResponse = {
+      data: aBroker(brokerName, brokerDC),
       meta: {},
     }
 
@@ -120,9 +118,8 @@ describe('missionctrl:broker:create', () => {
       redundancyGroupSslEnabled: false,
       serviceClassId: brokerSvcClassId,
     }
-    const expectBroker: EventBrokerCreateDetail = aBroker(brokerName, brokerDC)
-    const expectResponse: EventBrokerCreateApiResponse = {
-      data: expectBroker,
+    const expectResponse: EventBrokerOperationApiResponse = {
+      data: aBroker(brokerName, brokerDC),
       meta: {},
     }
 

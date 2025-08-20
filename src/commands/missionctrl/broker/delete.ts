@@ -1,8 +1,13 @@
-import { Flags } from '@oclif/core'
+import {Flags} from '@oclif/core'
 
-import { ScCommand } from '../../../sc-command.js'
-import { EventBrokerListApiResponse } from '../../../types/broker.js'
-import { ScConnection } from '../../../util/sc-connection.js'
+import {ScCommand} from '../../../sc-command.js'
+import {
+  EventBrokerListApiResponse,
+  EventBrokerOperationApiResponse,
+  EventBrokerOperationDetail,
+} from '../../../types/broker.js'
+import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerDelete extends ScCommand<typeof MissionctrlBrokerDelete> {
   static override args = {}
@@ -28,8 +33,8 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     }),
   }
 
-  public async run(): Promise<{ message: string }> {
-    const { flags } = await this.parse(MissionctrlBrokerDelete)
+  public async run(): Promise<EventBrokerOperationDetail> {
+    const {flags} = await this.parse(MissionctrlBrokerDelete)
 
     const name = flags.name ?? ''
     const brokerId = flags['broker-id'] ?? ''
@@ -57,9 +62,20 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
 
     // API call to delete environment by id
     apiUrl += `/${brokerIdToDelete}`
-    await conn.delete<string>(apiUrl)
-    const message = `Event broker service with id '${brokerIdToDelete}' has been deleted successfully.`
-    this.log(message)
-    return { message }
+    const resp = await conn.delete<EventBrokerOperationApiResponse>(apiUrl)
+
+    // Display results
+    this.print(resp.data)
+
+    return resp.data
+  }
+
+  private print(broker: EventBrokerOperationDetail): void {
+    const tableRows = [
+      ['Key', 'Value'],
+      ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
+    ]
+    this.log()
+    this.log(renderKeyValueTable(tableRows))
   }
 }

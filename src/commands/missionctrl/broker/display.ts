@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 
 import { ScCommand } from '../../../sc-command.js'
-import { EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
+import { EventBrokerApiResponse, EventBrokerListApiResponse, EventBrokerServiceDetail } from '../../../types/broker.js'
 import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
 import { ScConnection } from '../../../util/sc-connection.js'
 
@@ -43,9 +43,9 @@ export default class MissionctrlBrokerDisplay extends ScCommand<typeof Missionct
     if (brokerId) {
       // API call to get broker by id
       apiUrl += `/${brokerId}`
-      const resp = await conn.get<EventBrokerServiceDetail>(apiUrl)
-      this.print(resp)
-      rawResp = [resp]
+      const resp = await conn.get<EventBrokerApiResponse>(apiUrl)
+      this.print(resp.data)
+      rawResp = [resp.data]
     } else if (name) {
       // API call to get broker by name
       apiUrl += `?customAttributes=name=="${name}"`

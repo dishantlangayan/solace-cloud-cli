@@ -1,10 +1,15 @@
-import { Flags } from '@oclif/core'
-import { MultiBar, Presets, SingleBar } from 'cli-progress'
+import {Flags} from '@oclif/core'
+import {MultiBar, Presets, SingleBar} from 'cli-progress'
 
-import { ScCommand } from '../../../sc-command.js'
-import { AllOperationResponse, EventBrokerListApiResponse, OperationData, OperationResponse } from '../../../types/broker.js'
-import { renderTable, sleep } from '../../../util/internal.js'
-import { ScConnection } from '../../../util/sc-connection.js'
+import {ScCommand} from '../../../sc-command.js'
+import {
+  EventBrokerAllOperationsApiResponse,
+  EventBrokerListApiResponse,
+  EventBrokerOperationApiResponse,
+  EventBrokerOperationDetail,
+} from '../../../types/broker.js'
+import {renderTable, sleep} from '../../../util/internal.js'
+import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerOpstatus extends ScCommand<typeof MissionctrlBrokerOpstatus> {
   static override args = {}
@@ -29,16 +34,18 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     }),
     'show-progress': Flags.boolean({
       char: 'p',
-      description: 'Displays a status bar of the in-progress operations. The command will wait for completion of each step of the operation.'
+      description:
+        'Displays a status bar of the in-progress operations. The command will wait for completion of each step of the operation.',
     }),
     'wait-ms': Flags.integer({
       char: 'w',
-      description: 'The milliseconds to wait between API calls for checking progress of the operation. Default is 5000 ms.'
+      description:
+        'The milliseconds to wait between API calls for checking progress of the operation. Default is 5000 ms.',
     }),
   }
 
-  public async run(): Promise<OperationData[]> {
-    const { flags } = await this.parse(MissionctrlBrokerOpstatus)
+  public async run(): Promise<EventBrokerOperationDetail[]> {
+    const {flags} = await this.parse(MissionctrlBrokerOpstatus)
 
     const name = flags.name ?? ''
     let brokerId = flags['broker-id'] ?? ''
@@ -56,11 +63,13 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       // API call to get broker by name
       apiUrl += `?customAttributes=name=="${name}"`
       const resp = await conn.get<EventBrokerListApiResponse>(apiUrl)
-      // FUTURE: show status of multiple brokers operations that match the name 
+      // FUTURE: show status of multiple brokers operations that match the name
       if (resp.data.length === 0) {
         this.error(`No brokers found with name: ${name}.`)
       } else if (resp.data.length > 1) {
-        this.error(`Multiple broker services found with: ${name}. Exactly one broker service must match the provided name.`)
+        this.error(
+          `Multiple broker services found with: ${name}. Exactly one broker service must match the provided name.`,
+        )
       } else {
         brokerId = resp.data[0]?.id
       }
@@ -68,11 +77,11 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
 
     // API call to retrieve status of the broker operation
     apiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations`
-    
-    const resp = await conn.get<AllOperationResponse>(apiUrl)
+
+    const resp = await conn.get<EventBrokerAllOperationsApiResponse>(apiUrl)
     const opStatusArray = [
       ['Operation Id', 'Operation Type', 'Status', 'Created Time', 'Completed Time'],
-      ...resp.data.map((item: OperationData) => [
+      ...resp.data.map((item: EventBrokerOperationDetail) => [
         item.id,
         item.operationType,
         item.status,
@@ -85,14 +94,17 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     this.log(renderTable(opStatusArray))
 
     // If show-progress flag is set, display progress bars for each operation
-    if(showProgress && resp.data.length > 0) {
+    if (showProgress && resp.data.length > 0) {
       // Create progress bar for each operation
-      const multiProgressBar = new MultiBar({
-        clearOnComplete: false,
-        format: ' {bar} | {operationType} | {value}/{total}',
-        hideCursor: true,
-      }, Presets.shades_classic)
-      
+      const multiProgressBar = new MultiBar(
+        {
+          clearOnComplete: false,
+          format: ' {bar} | {operationType} | {value}/{total}',
+          hideCursor: true,
+        },
+        Presets.shades_classic,
+      )
+
       // Get the initial progress for each operation
       const progressBars: [string, SingleBar][] = []
       let completedOperations = 0
@@ -100,27 +112,33 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
       for (const operationData of resp.data) {
         const opStatusApiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations/${operationData.id}?expand=progressLogs`
         // eslint-disable-next-line no-await-in-loop
-        const opStatusResp = await conn.get<OperationResponse>(opStatusApiUrl)
-        this.debug(`Operation ID: ${operationData.id}, Type: ${operationData.operationType}, Status: ${operationData.status}`)
+        const opStatusResp = await conn.get<EventBrokerOperationApiResponse>(opStatusApiUrl)
+        this.debug(
+          `Operation ID: ${operationData.id}, Type: ${operationData.operationType}, Status: ${operationData.status}`,
+        )
         if (opStatusResp.data.progressLogs) {
           const numSteps = opStatusResp.data.progressLogs.length
           // start a new progress bar for the operation with a total value of size of the steps
-          const progressBar = multiProgressBar.create(numSteps, 0, { operationType: operationData.operationType })
+          const progressBar = multiProgressBar.create(numSteps, 0, {operationType: operationData.operationType})
           // Update the progress with the steps completed
-          const completedNumSteps = opStatusResp.data.progressLogs.filter(log => log.status === 'success').length
+          const completedNumSteps = opStatusResp.data.progressLogs.filter((log) => log.status === 'success').length
           progressBar.update(completedNumSteps)
-          if (completedNumSteps === numSteps || opStatusResp.data.status === 'SUCCEEDED' || opStatusResp.data.status === 'FAILED') {
+          if (
+            completedNumSteps === numSteps ||
+            opStatusResp.data.status === 'SUCCEEDED' ||
+            opStatusResp.data.status === 'FAILED'
+          ) {
             completedOperations += 1
             progressBar.stop()
           }
-          
+
           // Add the operation ID and progress bar to the list
           progressBars.push([operationData.id, progressBar])
         }
       }
 
       // Check if all operations are completed
-      if(completedOperations === progressBars.length) {
+      if (completedOperations === progressBars.length) {
         allCompleted = true
       }
 
@@ -132,7 +150,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
         // eslint-disable-next-line no-await-in-loop
         allCompleted = await this.pollAllOperationStatus(conn, brokerId, progressBars)
       }
-      
+
       multiProgressBar.stop()
       this.log() // Add a new line for better readability
     }
@@ -140,21 +158,29 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     return resp.data
   }
 
-  private async pollAllOperationStatus(conn: ScConnection, brokerId: string, progressBars: [string, SingleBar][]): Promise<boolean> {
+  private async pollAllOperationStatus(
+    conn: ScConnection,
+    brokerId: string,
+    progressBars: [string, SingleBar][],
+  ): Promise<boolean> {
     let completedOperations = 0
     let allCompleted = false
     // For each operation, get the latest status and update the progress bar
     for (const [operationId, progressBar] of progressBars) {
       const opStatusApiUrl = `/missionControl/eventBrokerServices/${brokerId}/operations/${operationId}?expand=progressLogs`
       // eslint-disable-next-line no-await-in-loop
-      const opStatusResp = await conn.get<OperationResponse>(opStatusApiUrl)
+      const opStatusResp = await conn.get<EventBrokerOperationApiResponse>(opStatusApiUrl)
       if (opStatusResp.data.progressLogs) {
         const numSteps = opStatusResp.data.progressLogs.length
-        const completedNumSteps = opStatusResp.data.progressLogs.filter(log => log.status === 'success').length
+        const completedNumSteps = opStatusResp.data.progressLogs.filter((log) => log.status === 'success').length
         // Update progress bar
         progressBar.setTotal(numSteps)
         progressBar.update(completedNumSteps)
-        if (completedNumSteps === numSteps || opStatusResp.data.status === 'SUCCEEDED' || opStatusResp.data.status === 'FAILED') {
+        if (
+          completedNumSteps === numSteps ||
+          opStatusResp.data.status === 'SUCCEEDED' ||
+          opStatusResp.data.status === 'FAILED'
+        ) {
           completedOperations += 1
           progressBar.stop()
         }
@@ -164,7 +190,7 @@ export default class MissionctrlBrokerOpstatus extends ScCommand<typeof Missionc
     }
 
     // Check if all operations are completed
-    if(completedOperations === progressBars.length) {
+    if (completedOperations === progressBars.length) {
       allCompleted = true
     }
 

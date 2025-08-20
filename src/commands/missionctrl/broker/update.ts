@@ -1,9 +1,9 @@
-import { Flags } from '@oclif/core'
+import {Flags} from '@oclif/core'
 
-import { ScCommand } from '../../../sc-command.js'
-import { EventBrokerCreateApiResponse, EventBrokerCreateDetail, EventBrokerListApiResponse } from '../../../types/broker.js'
-import { camelCaseToTitleCase, renderKeyValueTable } from '../../../util/internal.js'
-import { ScConnection } from '../../../util/sc-connection.js'
+import {ScCommand} from '../../../sc-command.js'
+import {EventBrokerListApiResponse, EventBrokerOperationApiResponse, EventBrokerOperationDetail} from '../../../types/broker.js'
+import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerUpdate extends ScCommand<typeof MissionctrlBrokerUpdate> {
   static override args = {}
@@ -13,9 +13,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
   Your token must have one of the permissions listed in the Token Permissions.
 
   Token Permissions: [ mission_control:access or services:put ]`
-  static override examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
+  static override examples = ['<%= config.bin %> <%= command.id %>']
   static override flags = {
     'broker-id': Flags.string({
       char: 'b',
@@ -24,7 +22,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     }),
     locked: Flags.string({
       char: 'l',
-      description: `Indicates whether the event broker service has deletion protection enabled. The valid values are 'true' (enabled) or 'false' (disabled).`
+      description: `Indicates whether the event broker service has deletion protection enabled. The valid values are 'true' (enabled) or 'false' (disabled).`,
     }),
     name: Flags.string({
       char: 'n',
@@ -32,23 +30,23 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
       exactlyOne: ['broker-id', 'name'],
     }),
     'new-name': Flags.string({
-      description: 'New name of the event broker service. The new service name must be unique within an organization.'
+      description: 'New name of the event broker service. The new service name must be unique within an organization.',
     }),
   }
 
-  public async run(): Promise<EventBrokerCreateDetail> {
-    const { flags } = await this.parse(MissionctrlBrokerUpdate)
+  public async run(): Promise<EventBrokerOperationDetail> {
+    const {flags} = await this.parse(MissionctrlBrokerUpdate)
 
     const brokerId = flags['broker-id'] ?? ''
     const locked = flags.locked ?? ''
-    const lockedBoolValue: boolean = (locked === 'true')
+    const lockedBoolValue: boolean = locked === 'true'
     const name = flags.name ?? ''
     const newName = flags['new-name'] ?? ''
 
     // API body
     const body = {
-      ...(locked && { locked: lockedBoolValue }),
-      ...(newName && { name: newName }),
+      ...(locked && {locked: lockedBoolValue}),
+      ...(newName && {name: newName}),
     }
 
     const conn = new ScConnection()
@@ -63,7 +61,9 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
       if (resp.data.length === 0) {
         this.error(`No brokers found with name: ${name}.`)
       } else if (resp.data.length > 1) {
-        this.error(`Multiple brokers found with name: ${name}. Exactly one event broker service must match the provided name.`)
+        this.error(
+          `Multiple brokers found with name: ${name}. Exactly one event broker service must match the provided name.`,
+        )
       } else {
         brokerIdToUpdate = resp.data[0]?.id
       }
@@ -71,14 +71,14 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
 
     // API call to update broker by id
     apiUrl += `/${brokerIdToUpdate}`
-    const resp = await conn.patch<EventBrokerCreateApiResponse>(apiUrl, body)
+    const resp = await conn.patch<EventBrokerOperationApiResponse>(apiUrl, body)
     this.log(`Broker with id '${brokerIdToUpdate}' has been updated successfully.`)
     this.print(resp.data)
 
     return resp.data
   }
 
-  private print(broker: EventBrokerCreateDetail): void {
+  private print(broker: EventBrokerOperationDetail): void {
     const tableRows = [
       ['Key', 'Value'],
       ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
