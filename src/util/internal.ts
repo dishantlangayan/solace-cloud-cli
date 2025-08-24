@@ -1,4 +1,4 @@
-import { table } from 'table'
+import {table} from 'table'
 
 /**
  * Formats a camel case style `string` into a title case.
@@ -14,28 +14,35 @@ export function camelCaseToTitleCase(text: string): string {
 }
 
 export interface ColumnConfig {
-  width?: number,
+  width?: number
   wrapWord?: boolean
 }
 
-export function renderTable<T>(
-    data: T[][],
-    columnConfig?: Record<number, ColumnConfig>): string {
+/**
+ * Prints object data in a formatted key-value table.
+ * @param data The object data to print
+ * @returns Formatted table string
+ */
+export function printObjectAsKeyValueTable<T extends Record<string, unknown>>(data: T): string {
+  const tableRows = [
+    ['Key', 'Value'],
+    ...Object.entries(data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
+  ]
+  return renderKeyValueTable(tableRows)
+}
 
+export function renderTable<T>(data: T[][], columnConfig?: Record<number, ColumnConfig>): string {
   // Table config
   const tableConfig = {
-        columns: columnConfig
+    columns: columnConfig,
   }
   const tableStr = table(data, tableConfig)
   return tableStr
 }
 
-export function renderKeyValueTable<T>(
-    data: T[][],
-    columnConfig?: Record<number, ColumnConfig>): string {
-
+export function renderKeyValueTable<T>(data: T[][], columnConfig?: Record<number, ColumnConfig>): string {
   if (columnConfig === undefined) {
-        columnConfig = { 1: { width: 50, wrapWord: true } }
+    columnConfig = {1: {width: 50, wrapWord: true}}
   }
 
   // Table config
@@ -60,4 +67,4 @@ export function sleep(ms: number): Promise<void> {
   })
 }
 
-export const sleepModule = { sleep }
+export const sleepModule = {sleep}

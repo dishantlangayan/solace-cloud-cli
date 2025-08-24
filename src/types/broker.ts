@@ -63,6 +63,22 @@ export interface EventBrokerApiResponse {
   }
 }
 
+export interface EventBrokerRedundancyApiResponse {
+  data: {
+    id: string
+    isHighAvailability: boolean
+    redundancy: {
+      activeNode: string
+      configSync: string
+      redundancy: string
+    }
+    type: string
+  }
+  meta?: {
+    additionalProp?: Record<string, unknown>
+  }
+}
+
 export interface EventBrokerServiceDetail {
   adminState?: string
   allowedActions?: string[]
