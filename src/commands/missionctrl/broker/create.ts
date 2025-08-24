@@ -1,8 +1,8 @@
 import {Flags} from '@oclif/core'
 
 import {ScCommand} from '../../../sc-command.js'
-import {EventBrokerOperationApiResponse, EventBrokerOperationDetail} from '../../../types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {EventBrokerOperationApiResponse} from '../../../types/broker.js'
+import {printObjectAsKeyValueTable} from '../../../util/internal.js'
 import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerCreate extends ScCommand<typeof MissionctrlBrokerCreate> {
@@ -65,7 +65,7 @@ Token Permissions: [ \`services:post\` ]`
     }),
   }
 
-  public async run(): Promise<EventBrokerOperationDetail> {
+  public async run(): Promise<EventBrokerOperationApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerCreate)
 
     const datacenterId = flags['datacenter-id'] ?? ''
@@ -110,18 +110,10 @@ Token Permissions: [ \`services:post\` ]`
 
     // API call
     const resp = await conn.post<EventBrokerOperationApiResponse>(apiUrl, body)
-    // Display results
-    this.log('Event broker service created successfully.')
-    this.print(resp.data)
-    return resp.data
-  }
 
-  private print(broker: EventBrokerOperationDetail): void {
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-    this.log()
-    this.log(renderKeyValueTable(tableRows))
+    // Display results
+    this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
+
+    return resp
   }
 }

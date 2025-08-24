@@ -3,7 +3,7 @@ import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal.js'
+import {printObjectAsKeyValueTable} from '../../../../src/util/internal.js'
 import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, anEnv, setEnvVariables} from '../../../util/test-utils'
 
@@ -47,11 +47,6 @@ describe('missionctrl:broker:create', () => {
 
     scConnPostStub.returns(expectResponse)
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
     // Act
     const {stdout} = await runCommand(
       `missionctrl:broker:create -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`,
@@ -59,7 +54,7 @@ describe('missionctrl:broker:create', () => {
 
     // Assert
     expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 
   it(`runs missionctrl:broker:create -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId} -l -s 10 -m MyTestMsgVpn -r -v 10.0.0.1`, async () => {
@@ -81,11 +76,6 @@ describe('missionctrl:broker:create', () => {
 
     scConnPostStub.returns(expectResponse)
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
     // Act
     const {stdout} = await runCommand(
       `missionctrl:broker:create -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId} -l -s 10 -m MyTestMsgVpn -r -v 10.0.0.1`,
@@ -93,7 +83,7 @@ describe('missionctrl:broker:create', () => {
 
     // Assert
     expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 
   it(`runs missionctrl:broker:create -e ${envName} -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`, async () => {
@@ -126,11 +116,6 @@ describe('missionctrl:broker:create', () => {
     scConnGetStub.returns(Promise.resolve(envs))
     scConnPostStub.returns(expectResponse)
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
     // Act
     const {stdout} = await runCommand(
       `missionctrl:broker:create -e ${envName} -n ${brokerName} -d ${brokerDC} -c ${brokerSvcClassId}`,
@@ -139,6 +124,6 @@ describe('missionctrl:broker:create', () => {
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
     expect(scConnPostStub.getCall(0).calledWith('/missionControl/eventBrokerServices', expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 })
