@@ -2,14 +2,14 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {EventBrokerApiResponse} from '../../../../src/types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal.js'
+import {EventBrokerApiResponse, EventBrokerListApiResponse} from '../../../../src/types/broker.js'
+import {printObjectAsKeyValueTable} from '../../../../src/util/internal.js'
 import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, setEnvVariables} from '../../../util/test-utils.js'
 
 describe('missionctrl:broker:display', () => {
   setEnvVariables()
-  const brokerName: string = 'Default'
+  const brokerName: string = 'MyTestBrokerName'
   const brokerId: string = 'MyTestBrokerId'
   let scConnStub: sinon.SinonStub
 
@@ -34,12 +34,27 @@ describe('missionctrl:broker:display', () => {
     }
     scConnStub.returns(Promise.resolve(expectBroker))
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectBroker.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
+    // Act
     const {stdout} = await runCommand(`missionctrl:broker:display -b ${brokerId}`)
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+
+    // Assert
+    expect(scConnStub.getCall(0).calledWith(`/missionControl/eventBrokerServices/${brokerId}`)).to.be.true
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBroker.data as unknown as Record<string, unknown>))
+  })
+
+  it(`runs missionctrl:broker:display -n ${brokerName}`, async () => {
+    // Arrange
+    const expectBroker: EventBrokerListApiResponse = {
+      data: [aBroker(brokerId, brokerName)],
+      meta: {},
+    }
+    scConnStub.returns(Promise.resolve(expectBroker))
+
+    // Act
+    const {stdout} = await runCommand(`missionctrl:broker:display -n ${brokerName}`)
+
+    // Assert
+    expect(scConnStub.getCall(0).args[0]).to.contain(`?customAttributes=name=="${brokerName}"`)
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectBroker.data[0] as unknown as Record<string, unknown>))
   })
 })
