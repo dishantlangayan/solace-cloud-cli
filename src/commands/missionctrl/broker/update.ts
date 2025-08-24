@@ -1,8 +1,8 @@
 import {Flags} from '@oclif/core'
 
 import {ScCommand} from '../../../sc-command.js'
-import {EventBrokerListApiResponse, EventBrokerOperationApiResponse, EventBrokerOperationDetail} from '../../../types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {EventBrokerListApiResponse, EventBrokerOperationApiResponse} from '../../../types/broker.js'
+import {printObjectAsKeyValueTable} from '../../../util/internal.js'
 import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerUpdate extends ScCommand<typeof MissionctrlBrokerUpdate> {
@@ -13,7 +13,11 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
   Your token must have one of the permissions listed in the Token Permissions.
 
   Token Permissions: [ mission_control:access or services:put ]`
-  static override examples = ['<%= config.bin %> <%= command.id %>']
+  static override examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --broker-id <broker-id> --new-name <new-name>',
+    '<%= config.bin %> <%= command.id %> --name <name> --new-name <new-name>',
+  ]
   static override flags = {
     'broker-id': Flags.string({
       char: 'b',
@@ -34,7 +38,7 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     }),
   }
 
-  public async run(): Promise<EventBrokerOperationDetail> {
+  public async run(): Promise<EventBrokerOperationApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerUpdate)
 
     const brokerId = flags['broker-id'] ?? ''
@@ -73,17 +77,8 @@ export default class MissionctrlBrokerUpdate extends ScCommand<typeof Missionctr
     apiUrl += `/${brokerIdToUpdate}`
     const resp = await conn.patch<EventBrokerOperationApiResponse>(apiUrl, body)
     this.log(`Broker with id '${brokerIdToUpdate}' has been updated successfully.`)
-    this.print(resp.data)
+    this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
 
-    return resp.data
-  }
-
-  private print(broker: EventBrokerOperationDetail): void {
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-    this.log()
-    this.log(renderKeyValueTable(tableRows))
+    return resp
   }
 }
