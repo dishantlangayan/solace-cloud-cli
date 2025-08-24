@@ -3,7 +3,7 @@ import {expect} from 'chai'
 import * as sinon from 'sinon'
 
 import {EventBrokerListApiResponse, EventBrokerOperationApiResponse} from '../../../../src/types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal.js'
+import {printObjectAsKeyValueTable} from '../../../../src/util/internal.js'
 import {ScConnection} from '../../../../src/util/sc-connection.js'
 import {aBroker, createTestOperationResponse, setEnvVariables} from '../../../util/test-utils'
 
@@ -40,16 +40,13 @@ describe('missionctrl:broker:delete', () => {
 
     scConnDeleteStub.returns(expectBrokerOpResponse)
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectBrokerOpResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
     // Act
     const {stdout} = await runCommand(`missionctrl:broker:delete -b ${brokerId}`)
 
     // Assert
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(
+      printObjectAsKeyValueTable(expectBrokerOpResponse.data as unknown as Record<string, unknown>),
+    )
   })
 
   it(`runs missionctrl:broker:delete -n ${brokerName}`, async () => {
@@ -67,16 +64,13 @@ describe('missionctrl:broker:delete', () => {
     scConnGetStub.returns(Promise.resolve(expectBrokerResponse))
     scConnDeleteStub.returns(Promise.resolve(expectBrokerOpResponse))
 
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectBrokerOpResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-
     // Act
     const {stdout} = await runCommand(`missionctrl:broker:delete -n ${brokerName}`)
 
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?customAttributes=name=="${brokerName}"`)
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(
+      printObjectAsKeyValueTable(expectBrokerOpResponse.data as unknown as Record<string, unknown>),
+    )
   })
 })

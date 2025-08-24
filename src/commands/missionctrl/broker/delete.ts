@@ -1,12 +1,8 @@
 import {Flags} from '@oclif/core'
 
 import {ScCommand} from '../../../sc-command.js'
-import {
-  EventBrokerListApiResponse,
-  EventBrokerOperationApiResponse,
-  EventBrokerOperationDetail,
-} from '../../../types/broker.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../util/internal.js'
+import {EventBrokerListApiResponse, EventBrokerOperationApiResponse} from '../../../types/broker.js'
+import {printObjectAsKeyValueTable} from '../../../util/internal.js'
 import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class MissionctrlBrokerDelete extends ScCommand<typeof MissionctrlBrokerDelete> {
@@ -33,7 +29,7 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     }),
   }
 
-  public async run(): Promise<EventBrokerOperationDetail> {
+  public async run(): Promise<EventBrokerOperationApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerDelete)
 
     const name = flags.name ?? ''
@@ -65,17 +61,8 @@ Token Permissions: [ \`services:delete\` **or** \`services:delete:self\` **or** 
     const resp = await conn.delete<EventBrokerOperationApiResponse>(apiUrl)
 
     // Display results
-    this.print(resp.data)
+    this.log(printObjectAsKeyValueTable(resp.data as unknown as Record<string, unknown>))
 
-    return resp.data
-  }
-
-  private print(broker: EventBrokerOperationDetail): void {
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(broker).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
-    this.log()
-    this.log(renderKeyValueTable(tableRows))
+    return resp
   }
 }
