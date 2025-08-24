@@ -13,6 +13,7 @@ Your token must have one of the permissions listed in the Token Permissions.
 
 Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \`services:get:self\` **or** \`services:view\` **or** \`services:view:self\` ]`
   static override examples = [
+    '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --name=MyBrokerName --pageNumber=1 --pageSize=10 --sort=name:asc',
   ]
   static override flags = {
@@ -38,7 +39,7 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
     }),
   }
 
-  public async run(): Promise<EventBrokerServiceDetail[]> {
+  public async run(): Promise<EventBrokerListApiResponse> {
     const {flags} = await this.parse(MissionctrlBrokerList)
 
     const conn = new ScConnection()
@@ -73,10 +74,9 @@ Token Permissions: [ \`mission_control:access\` **or** \`services:get\` **or** \
       ]),
     ]
     // Display results as a table
-    this.log()
     this.log(renderTable(brokerArray))
 
     // Return raw json if --json flag is set
-    return resp.data
+    return resp
   }
 }
