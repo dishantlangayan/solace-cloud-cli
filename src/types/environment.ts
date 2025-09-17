@@ -22,27 +22,8 @@ export interface Environment {
   updatedBy?: string
   updatedTime?: string
 }
-// Example of an Environment object
-// {
-//    name: 'Default',
-//    description: 'Use this environment to get started. You can rename, edit, or delete it at any time. You must have at least one environment.',
-//    isDefault: false,
-//    isProduction: true,
-//    id: 'g9bh4gy9qtz',
-//    createdBy: 'system',
-//    createdTime: '2024-09-05T19:54:42.766',
-//    updatedBy: '67tr8tku4l',
-//    updatedTime: '2025-04-08T20:38:57.443',
-//    organization: {
-//        id: 'customertraining',
-//        name: 'Customer Training',
-//        internal: false,
-//        organizationType: 'ENTERPRISE'
-//      },
-//    type: 'environment'
-//  }
 
-export interface EnvironmentApiResponse {
+export interface EnvironmentListApiResponse {
   data: Environment[]
   meta: {
     pagination: {
@@ -55,6 +36,6 @@ export interface EnvironmentApiResponse {
   }
 }
 
-export interface EnvironmentDetail {
+export interface EnvironmentApiResponse {
   data: Environment
 }

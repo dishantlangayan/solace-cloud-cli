@@ -2,8 +2,8 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {Environment, EnvironmentApiResponse, EnvironmentDetail} from '../../../../src/types/environment'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal'
+import {EnvironmentApiResponse, EnvironmentListApiResponse} from '../../../../src/types/environment'
+import {printObjectAsKeyValueTable} from '../../../../src/util/internal'
 import {ScConnection} from '../../../../src/util/sc-connection'
 import {anEnv, setEnvVariables} from '../../../util/test-utils'
 
@@ -35,11 +35,10 @@ describe('platform:env:update', () => {
     const expectBody = {
       name: envNewName,
     }
-    const expectEnv: Environment = anEnv(envNewName, false, false) // Environment with new name
-    const expectResponse: EnvironmentDetail = {
-      data: expectEnv,
+    const expectResponse: EnvironmentApiResponse = {
+      data: anEnv(envNewName, false, false),
     }
-    const expectEnvApiResponse: EnvironmentApiResponse = {
+    const expectEnvListApiResponse: EnvironmentListApiResponse = {
       data: [anEnv(envName, false, false)],
       meta: {
         pagination: {
@@ -52,13 +51,8 @@ describe('platform:env:update', () => {
       },
     }
 
-    scConnGetStub.returns(Promise.resolve(expectEnvApiResponse))
+    scConnGetStub.returns(Promise.resolve(expectEnvListApiResponse))
     scConnUpdateStub.returns(Promise.resolve(expectResponse))
-
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
 
     // Act
     const {stdout} = await runCommand(`platform:env:update --name=${envName} --new-name=${envNewName}`)
@@ -66,7 +60,7 @@ describe('platform:env:update', () => {
     // Assert
     expect(scConnGetStub.getCall(0).args[0]).to.contain(`?name=${envName}`)
     expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 
   it(`runs platform:env:update --env-id=id${envName} --isDefault`, async () => {
@@ -74,24 +68,18 @@ describe('platform:env:update', () => {
     const expectBody = {
       isDefault: true,
     }
-    const expectEnv: Environment = anEnv(envName, true, false)
-    const expectResponse: EnvironmentDetail = {
-      data: expectEnv,
+    const expectResponse: EnvironmentApiResponse = {
+      data: anEnv(envName, true, false),
     }
 
     scConnUpdateStub.returns(Promise.resolve(expectResponse))
-
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
 
     // Act
     const {stdout} = await runCommand(`platform:env:update --env-id=id${envName} --isDefault`)
 
     // Assert
     expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 
   it(`runs platform:env:update --env-id=id${envName} --description="${envDescription}"`, async () => {
@@ -99,24 +87,18 @@ describe('platform:env:update', () => {
     const expectBody = {
       description: envDescription,
     }
-    const expectEnv: Environment = anEnv(envName, false, false)
-    expectEnv.description = envDescription
-    const expectResponse: EnvironmentDetail = {
-      data: expectEnv,
+    const expectResponse: EnvironmentApiResponse = {
+      data: anEnv(envName, false, false),
     }
+    expectResponse.data.description = envDescription
 
     scConnUpdateStub.returns(Promise.resolve(expectResponse))
-
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
 
     // Act
     const {stdout} = await runCommand(`platform:env:update --env-id=id${envName} --description="${envDescription}"`)
 
     // Assert
     expect(scConnUpdateStub.getCall(0).calledWith(`/platform/environments/id${envName}`, expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 })

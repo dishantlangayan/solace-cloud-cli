@@ -1,30 +1,33 @@
-import { Flags } from '@oclif/core'
+import {Flags} from '@oclif/core'
 
-import { ScCommand } from '../../../sc-command.js'
-import { EnvironmentApiResponse } from '../../../types/environment.js'
-import { ScConnection } from '../../../util/sc-connection.js'
+import {ScCommand} from '../../../sc-command.js'
+import {EnvironmentListApiResponse} from '../../../types/environment.js'
+import {ScConnection} from '../../../util/sc-connection.js'
 
 export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelete> {
   static override args = {}
   static override description = `Delete an environment using either its name or unique identifier. The default environment cannot be deleted.
 
   Token Permissions: [ environments:edit ]`
-  static override examples = ['<%= config.bin %> <%= command.id %> --name=MyEnvName', '<%= config.bin %> <%= command.id %> --env-id=MyEnvId']
+  static override examples = [
+    '<%= config.bin %> <%= command.id %> --name=MyEnvName',
+    '<%= config.bin %> <%= command.id %> --env-id=MyEnvId',
+  ]
   static override flags = {
     'env-id': Flags.string({
       char: 'e',
       description: 'Id of the environment.',
-      exactlyOne: ['env-id', 'name']
+      exactlyOne: ['env-id', 'name'],
     }),
     name: Flags.string({
       char: 'n',
       description: 'Name of the environment.',
-      exactlyOne: ['env-id', 'name']
+      exactlyOne: ['env-id', 'name'],
     }),
   }
 
-  public async run(): Promise<{ message: string }> {
-    const { flags } = await this.parse(PlatformEnvDelete)
+  public async run(): Promise<{message: string}> {
+    const {flags} = await this.parse(PlatformEnvDelete)
 
     const name = flags.name ?? ''
     const envId = flags['env-id'] ?? ''
@@ -41,7 +44,7 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     if (name) {
       // API call to get environment by name
       const getEnvApiUrl = `${apiUrl}?name=${name}`
-      const resp = await conn.get<EnvironmentApiResponse>(getEnvApiUrl)
+      const resp = await conn.get<EnvironmentListApiResponse>(getEnvApiUrl)
       if (resp.data.length > 1) {
         foundMultiple = true
       } else {
@@ -62,6 +65,6 @@ export default class PlatformEnvDelete extends ScCommand<typeof PlatformEnvDelet
     }
 
     // Return raw json if --json flag is set
-    return { message }
+    return {message}
   }
 }

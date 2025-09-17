@@ -2,8 +2,8 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 
-import {Environment, EnvironmentDetail} from '../../../../src/types/environment.js'
-import {camelCaseToTitleCase, renderKeyValueTable} from '../../../../src/util/internal'
+import {Environment, EnvironmentApiResponse} from '../../../../src/types/environment.js'
+import {printObjectAsKeyValueTable} from '../../../../src/util/internal'
 import {ScConnection} from '../../../../src/util/sc-connection'
 import {anEnv, setEnvVariables} from '../../../util/test-utils'
 
@@ -33,22 +33,17 @@ describe('platform:env:create', () => {
       name: envName,
     }
     const expectEnv: Environment = anEnv(envName, false, false)
-    const expectResponse: EnvironmentDetail = {
+    const expectResponse: EnvironmentApiResponse = {
       data: expectEnv,
     }
     scConnStub.returns(expectResponse)
-
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
 
     // Act
     const {stdout} = await runCommand(`platform:env:create --name=${envName}`)
 
     // Assert
     expect(scConnStub.getCall(0).calledWith('/platform/environments', expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 
   it(`runs platform:env:create --name=${envName} --description="This is an environment description."`, async () => {
@@ -60,16 +55,11 @@ describe('platform:env:create', () => {
       name: envName,
     }
     const expectEnv: Environment = anEnv(envName, false, false)
-    const expectResponse: EnvironmentDetail = {
+    const expectResponse: EnvironmentApiResponse = {
       data: expectEnv,
     }
     expectResponse.data.description = expectBody.description
     scConnStub.returns(expectResponse)
-
-    const tableRows = [
-      ['Key', 'Value'],
-      ...Object.entries(expectResponse.data).map(([key, value]) => [camelCaseToTitleCase(key), value]),
-    ]
 
     // Act
     const {stdout} = await runCommand(
@@ -78,6 +68,6 @@ describe('platform:env:create', () => {
 
     // Assert
     expect(scConnStub.getCall(0).calledWith('/platform/environments', expectBody)).to.be.true
-    expect(stdout).to.contain(renderKeyValueTable(tableRows))
+    expect(stdout).to.contain(printObjectAsKeyValueTable(expectResponse.data as unknown as Record<string, unknown>))
   })
 })
